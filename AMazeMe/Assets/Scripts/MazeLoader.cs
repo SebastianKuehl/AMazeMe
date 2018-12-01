@@ -9,7 +9,7 @@ public class MazeLoader : MonoBehaviour {
 	public Transform secondCamera;
 	public float size = 2f;
 
-	private MazeCell[,] mazeCells;
+	public MazeCell[,] mazeCells;
 	private GameObject plane;
 	private float width; // x-Axis
 	private float height; // z-Axis

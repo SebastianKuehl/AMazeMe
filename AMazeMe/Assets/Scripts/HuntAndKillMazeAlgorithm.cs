@@ -140,8 +140,8 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 		bool wallDestroyed = false;
 
 		while (!wallDestroyed) {
-			// int direction = Random.Range (1, 5);
-			int direction = ProceduralNumberGenerator.GetNextNumber ();
+			int direction = Random.Range (1, 5);
+			// int direction = ProceduralNumberGenerator.GetNextNumber ();
 
 			if (direction == 1 && row > 0 && mazeCells [row - 1, column].visited) {
 				DestroyWallIfItExists (mazeCells [row, column].northWall);

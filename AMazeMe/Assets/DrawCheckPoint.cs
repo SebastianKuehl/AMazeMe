@@ -4,21 +4,33 @@ using UnityEngine;
 
 public class DrawCheckPoint : MonoBehaviour {
 
-	public GameObject[] checkpoint;
-
 	public Material lineMat;// = new Material("Shader \"Lines/Colored Blended\" {" + "SubShader { Pass { " + "    Blend SrcAlpha OneMinusSrcAlpha " + "    ZWrite Off Cull Off Fog { Mode Off } " + "    BindChannels {" + "      Bind \"vertex\", vertex Bind \"color\", color }" + "} } }");
 
-	private void DrawConnectingLines() {
+	private RightController rightControllerScript;
+	private List<Vector2> PlayerPosition;
 
-		checkpoint = GameObject.FindGameObjectsWithTag ("Checkpoint"); // TODO Sehr ressourcenaufwändig
-		if (checkpoint.Length > 1) {
-			for (int i = 0; i < checkpoint.Length - 1; i++) {
-				GL.Begin(GL.LINES);
-				lineMat.SetPass(0);
-				GL.Color(new Color(70f, 250f, 60f, 0.5f));
-				GL.Vertex3(checkpoint [i].transform.position.x, 2.1f, checkpoint [i].transform.position.z);
-				GL.Vertex3(checkpoint [i + 1].transform.position.x, 2.1f, checkpoint [i + 1].transform.position.z);
-				GL.End();
+	void Start() {
+		PlayerPosition = new List<Vector2> ();
+	}
+
+	private void DrawConnectingLines() {
+		if (rightControllerScript == null) {
+			if (GameObject.Find ("NonHmdController") != null) {
+				rightControllerScript = GameObject.Find ("NonHmdController").GetComponent<RightController> ();
+			}
+		} else {
+			// Punkte holen
+			PlayerPosition = rightControllerScript.PlayerPosition;
+			if (PlayerPosition.Count > 1) {
+				for (int i = 0; i < PlayerPosition.Count - 1; i++) {
+					// Debug.DrawLine (PlayerPosition[i], PlayerPosition[i + 1], Color.green);
+					GL.Begin(GL.LINES);
+					lineMat.SetPass(0);
+					GL.Color(new Color(70f, 250f, 60f, 0.5f));
+					GL.Vertex3(PlayerPosition[i].x, 2.1f, PlayerPosition[i].y);
+					GL.Vertex3(PlayerPosition[i + 1].x, 2.1f, PlayerPosition[i + 1].y);
+					GL.End();
+				}
 			}
 		}
 	}
