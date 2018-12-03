@@ -17,7 +17,7 @@ public class RightController : MonoBehaviour {
 	private MazeLoader MazeLoaderScript;
 	private Vector2 wallPosition;
 	private Vector3 playerPosition;
-	private bool ButtonHasBeenPressed, ValidPosition;
+	private bool ButtonHasBeenPressed, ValidPosition, WASD_Keys;
 	private int playerX, playerZ, OldPlayerX, OldPlayerZ;
 
 	void Start() {
@@ -33,7 +33,9 @@ public class RightController : MonoBehaviour {
 
 	void FixedUpdate() {
 		device = SteamVR_Controller.Input ((int) trackedObject.index);
-		if (device.GetTouch (SteamVR_Controller.ButtonMask.Touchpad) && (PressForMovement ? device.GetPress(SteamVR_Controller.ButtonMask.Touchpad) : true)) {
+        WASD_Keys = Input.GetKey("w") || Input.GetKey("a") || Input.GetKey("s") || Input.GetKey("d");
+
+        if ((device.GetTouch (SteamVR_Controller.ButtonMask.Touchpad) && (PressForMovement ? device.GetPress(SteamVR_Controller.ButtonMask.Touchpad) : true)) || WASD_Keys) {
 			if(Teleport) {
 				TeleportMovement ();
 			} else if (Running){
@@ -44,7 +46,7 @@ public class RightController : MonoBehaviour {
 
 	private void TeleportMovement() {
 		
-		if (!device.GetPress (SteamVR_Controller.ButtonMask.Touchpad)) {
+		if (!device.GetPress (SteamVR_Controller.ButtonMask.Touchpad) || WASD_Keys) {
 			ButtonHasBeenPressed = false;
 			return;
 		}
@@ -63,18 +65,18 @@ public class RightController : MonoBehaviour {
 			OldPlayerX = playerX;
 			OldPlayerZ = playerZ;
 			MazeCell[,] mazeCells = MazeLoaderScript.mazeCells; 
-			// In maze the walls are rotate 90 degrees left
-			if(device.GetAxis().x >= 0.7f) { // Rechts
+			// In maze the walls are rotated 90 degrees to the left
+			if(device.GetAxis().x >= 0.7f) { // Right
 				playerX = playerX >= MazeLoaderScript.mazeRows - 1 ? playerX : playerX + 1;
 				ValidPosition = mazeCells [OldPlayerX, OldPlayerZ].southWall == null && mazeCells [playerX, playerZ].northWall == null;
-			} else if (device.GetAxis().x <= -0.7f) { // Links
+			} else if (device.GetAxis().x <= -0.7f) { // Left
 				playerX = playerX <= 0 ? 0 : playerX - 1;
 				ValidPosition = mazeCells [OldPlayerX, OldPlayerZ].northWall == null && mazeCells [playerX, playerZ].southWall == null;
 			}
-			if(device.GetAxis().y >= 0.7f) { // Oben
+			if(device.GetAxis().y >= 0.7f) { // Up
 				playerZ = playerZ >= MazeLoaderScript.mazeColumns - 1 ? playerZ : playerZ + 1;
 				ValidPosition = mazeCells [OldPlayerX, OldPlayerZ].eastWall == null && mazeCells [playerX, playerZ].westWall == null;
-			} else if (device.GetAxis().y <= -0.7f) { // Unten
+			} else if (device.GetAxis().y <= -0.7f) { // Down
 				playerZ = playerZ <= 0 ? 0 : playerZ - 1;
 				ValidPosition = mazeCells [OldPlayerX, OldPlayerZ].westWall == null && mazeCells [playerX, playerZ].eastWall == null;
 			}
@@ -91,31 +93,27 @@ public class RightController : MonoBehaviour {
 	}
 
 	private void RunningMovement() {
-		// Neue Position berechnen
+		// Calculate new Position
 		Vector3 newPlayerPosition = transform.position + transform.right * Time.deltaTime * device.GetAxis ().x;
 		newPlayerPosition = (newPlayerPosition + transform.right * Time.deltaTime * device.GetAxis ().x) +  transform.forward * Time.deltaTime * 3 * device.GetAxis ().y;
 
 		bool collision = false;
 
-		// Für jede Wand Überschneidung überprüfen
+		// Check Collision for each wall on axis x and z
 		foreach (GameObject gameObject in walls) {
-			if (checkForCollision(gameObject.transform.position, gameObject.transform.localScale, newPlayerPosition)) { // Überschneidung prüfen
+			if (checkForCollision(gameObject.transform.position, gameObject.transform.localScale, newPlayerPosition)) {
 				collision = true;
 				break;
 			}
 		}
 
-		// Wenn nicht geschnitten: Setze, Sonst: ignoriere
 		if (!collision) {
 			transform.position = newPlayerPosition;
 			PlayerPosition.Add (new Vector2(newPlayerPosition.x, newPlayerPosition.z));
 		}
-		// transform.position = transform.position + transform.right * Time.deltaTime * device.GetAxis ().x;
-		// transform.position = (transform.position + transform.right * Time.deltaTime * device.GetAxis ().x) +  transform.forward * Time.deltaTime * 3 * device.GetAxis ().y;
 	}
 
 	private bool checkForCollision(Vector3 wallPosition, Vector3 wallScale, Vector3 newPlayerPosition) {
-		// Debug.Log(wallPosition.x +" "+ newPlayerPosition.x+" "+ (wallPosition.x + wallScale.x));
 		return (wallPosition.x <= newPlayerPosition.x && newPlayerPosition.x <= wallPosition.x + wallScale.x)
 			&& (wallPosition.z <= newPlayerPosition.z && newPlayerPosition.z <= wallPosition.z + wallScale.z);
 	}
