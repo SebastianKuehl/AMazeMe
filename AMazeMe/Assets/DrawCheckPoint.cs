@@ -6,14 +6,19 @@ public class DrawCheckPoint : MonoBehaviour {
 
 	public Material lineMat;// = new Material("Shader \"Lines/Colored Blended\" {" + "SubShader { Pass { " + "    Blend SrcAlpha OneMinusSrcAlpha " + "    ZWrite Off Cull Off Fog { Mode Off } " + "    BindChannels {" + "      Bind \"vertex\", vertex Bind \"color\", color }" + "} } }");
 
-	private RightController rightControllerScript;
-	private List<Vector2> PlayerPosition;
+	public List<Vector2> PlayerPositionList;
+	public int mazeRows, mazeColumns;
+	public Quaternion cameraRot;
 
 	void Start() {
-		PlayerPosition = new List<Vector2> ();
+		PlayerPositionList = new List<Vector2> ();
 	}
 
 	private void DrawConnectingLines() {
+
+
+
+		/*
 		if (rightControllerScript == null) {
 			if (GameObject.Find ("NonHmdController") != null) {
 				rightControllerScript = GameObject.Find ("NonHmdController").GetComponent<RightController> ();
@@ -33,6 +38,7 @@ public class DrawCheckPoint : MonoBehaviour {
 				}
 			}
 		}
+		*/
 	}
 
 	// To show the lines in the game window when it is running

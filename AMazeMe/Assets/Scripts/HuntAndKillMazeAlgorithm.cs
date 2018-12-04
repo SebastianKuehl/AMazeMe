@@ -26,8 +26,7 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 
 	private void Kill() {
 		while (RouteStillAvailable (currentRow, currentColumn)) {
-			// int direction = Random.Range (1, 5);
-			int direction = ProceduralNumberGenerator.GetNextNumber ();
+			int direction = Random.Range (1, 5);
 
 			if (direction == 1 && CellIsAvailable (currentRow - 1, currentColumn)) {
 				// North
@@ -40,12 +39,12 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 				DestroyWallIfItExists (mazeCells [currentRow + 1, currentColumn].northWall);
 				currentRow++;
 			} else if (direction == 3 && CellIsAvailable (currentRow, currentColumn + 1)) {
-				// east
+				// East
 				DestroyWallIfItExists (mazeCells [currentRow, currentColumn].eastWall);
 				DestroyWallIfItExists (mazeCells [currentRow, currentColumn + 1].westWall);
 				currentColumn++;
 			} else if (direction == 4 && CellIsAvailable (currentRow, currentColumn - 1)) {
-				// west
+				// West
 				DestroyWallIfItExists (mazeCells [currentRow, currentColumn].westWall);
 				DestroyWallIfItExists (mazeCells [currentRow, currentColumn - 1].eastWall);
 				currentColumn--;

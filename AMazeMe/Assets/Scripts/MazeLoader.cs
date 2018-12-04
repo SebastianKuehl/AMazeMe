@@ -5,12 +5,9 @@ public class MazeLoader : MonoBehaviour {
 	public int mazeRows; // x-Axis
 	public int mazeColumns; // z-Axis
 	public GameObject wall;
-	public GameObject roof;
-	public Transform secondCamera;
 	public float size = 2f;
 
 	public MazeCell[,] mazeCells;
-	private GameObject plane;
 	private float width; // x-Axis
 	private float height; // z-Axis
 
@@ -19,12 +16,6 @@ public class MazeLoader : MonoBehaviour {
 
 		MazeAlgorithm ma = new HuntAndKillMazeAlgorithm (mazeCells);
 		ma.CreateMaze ();
-
-		// Generate and place plane for map
-		CreateAndPlacePlane ();
-
-		//Set position of second camera above center of plane
-		SetSecondCameraPosition();
 	}
 
 	private void InitializeMaze() {
@@ -62,23 +53,5 @@ public class MazeLoader : MonoBehaviour {
 				mazeCells [r, c].southWall.transform.Rotate (Vector3.up * 90f);
 			}
 		}
-	}
-
-	private void CreateAndPlacePlane() {
-		// GameObject plane = GameObject.CreatePrimitive (PrimitiveType.Plane);
-		width = mazeRows /10;
-		height = mazeColumns /10 ;
-		float wallThickness = wall.transform.localScale.z;
-		wallThickness += wallThickness / size;
-		plane = Instantiate(roof, new Vector3 (mazeRows/2f - wallThickness, 2f, mazeColumns/2f - wallThickness), Quaternion.identity) as GameObject;
-		plane.transform.localScale = new Vector3(width, 1f, height);
-		// plane.transform.position = new Vector3 (mazeRows - wallThickness - width, size, mazeColumns - wallThickness - height);
-	}
-
-	private void SetSecondCameraPosition() {
-		//Trigonometrie for yAxis for quadratical maze
-		float yAxis = plane.transform.localScale.x * 10 + plane.transform.localScale.x * 2; 
-		//float yAxis = plane.transform.position.x/Mathf.Tan(45f);
-		secondCamera.position = new Vector3 (plane.transform.position.x, yAxis, plane.transform.position.z);
 	}
 }
