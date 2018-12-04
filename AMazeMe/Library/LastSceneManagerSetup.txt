@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/scenes/AMaze.unity
+- path: Assets/Scenes/AMaze.unity
   isLoaded: 1
   isActive: 1
