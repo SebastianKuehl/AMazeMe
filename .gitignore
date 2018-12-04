@@ -1,12 +1,9 @@
-
 Dokumentation/~\$ojektdokumentation\.docx
 
-[Ll]ibrary/
-[Tt]emp/
 [Oo]bj/
+[Tt]emp/
 [Bb]uild/
 [Bb]uilds/
-Assets/AssetStoreTools*
 
 # Visual Studio cache directory
 .vs/
