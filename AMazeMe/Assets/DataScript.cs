@@ -26,7 +26,7 @@ public class DataScript : MonoBehaviour {
         // Update player position
         if (RightControllerScript == null)
         {
-            GameObject NonHmdController = GameObject.Find("NonHmdController");
+			GameObject NonHmdController = GameObject.Find("Controller (right)");
             if (NonHmdController != null)
             {
                 RightControllerScript = NonHmdController.GetComponent<RightController>();
@@ -34,7 +34,7 @@ public class DataScript : MonoBehaviour {
         } else
         {
             PlayerPosChanged = RightControllerScript.playerX != this.PlayerPosVec.x || RightControllerScript.playerZ != this.PlayerPosVec.z;
-
+			Debug.Log (PlayerPosChanged);
             if (PlayerPosChanged)
             {
                 this.PlayerPosVec = new Vector3(RightControllerScript.playerX, 0, RightControllerScript.playerZ);
