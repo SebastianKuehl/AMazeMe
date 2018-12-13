@@ -4,23 +4,26 @@ using UnityEngine;
 
 public class InputScript : MonoBehaviour {
 
-    public Transform transform;
-    public bool keyInput = true;
+    public bool inputByKeyboard = true;
     public bool PressForMovement = false;
     public bool Teleport = true;
     public bool Running = false;
-    public List<Vector2> PlayerPosition;
+    public List<Vector2> playerPositionList;
     public int playerX, playerZ, OldPlayerX, OldPlayerZ, mazeRows, mazeColumns;
 
-    private RightControllerScript rightController;
+    private GameObject rightController;
+    private ViveControllerScript rightControllerScript;
+    private Transform cameraTransform;
     private List<GameObject> walls;
     private MazeLoader MazeLoaderScript;
     private Vector2 wallPosition;
     private Vector3 playerPosition;
-    private bool ButtonHasBeenPressed, ValidPosition;
+    private bool ButtonHasBeenPressed, validPosition;
+    private MazeCell[,] mazeCells;
 
     void Start() {
-        PlayerPosition = new List<Vector2>();
+        rightController = GameObject.Find("Controller (right)");
+        playerPositionList = new List<Vector2>();
         walls = new List<GameObject>();
         foreach (GameObject gameObject in GameObject.FindObjectsOfType(typeof(GameObject))) {
             if (gameObject.name.Contains("Wall")) {
@@ -30,75 +33,108 @@ public class InputScript : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (keyInput) {
-            if (Input.GetKey("w")) {
-                Debug.Log("w");
+        // Load all the needed data if not done before
+        if (MazeLoaderScript == null) {
+            GameObject cameraRig = GameObject.Find("[CameraRig]");
+            if (cameraRig != null) {
+                cameraTransform = cameraRig.GetComponent<Transform>();
+                MazeLoaderScript = cameraRig.GetComponent<MazeLoader>();
+                mazeRows = MazeLoaderScript.mazeRows;
+                mazeColumns = MazeLoaderScript.mazeColumns;
+                mazeCells = MazeLoaderScript.mazeCells;
+            }
+        } else {
+
+            // Handle the chosen method of input
+            if (inputByKeyboard) {
+                HandleKeyboardInput();
+            } else {
+                HandleControllerInput();
             }
         }
+    }
 
-        if (rightController.touchpadTouched() && (PressForMovement ? rightController.touchpadPressed() : true)) {
-            if (Teleport) {
-                TeleportMovement();
-            } else if (Running) {
-                RunningMovement();
+    private void HandleKeyboardInput() {
+        ControlMovement(Input.GetKeyDown("w"), Input.GetKeyDown("s"), Input.GetKeyDown("a"), Input.GetKeyDown("d"));
+    }
+
+    private void HandleControllerInput() {
+        if (rightController == null) {
+            rightController = GameObject.Find("Controller (right)");
+        } else if (rightControllerScript == null) {
+            rightControllerScript = rightController.GetComponent<ViveControllerScript>();
+        } else {
+            if (rightControllerScript.TouchpadTouched() && (PressForMovement ? rightControllerScript.TouchpadPressed() : true)) {
+                if (Teleport) {
+                    TeleportMovement();
+                } else if (Running) {
+                    RunningMovement();
+                }
             }
         }
     }
 
     private void TeleportMovement() {
+        if (rightControllerScript.TouchpadPressed()) {
+            ControlMovement(rightControllerScript.TouchpadTouchUp(),
+                rightControllerScript.TouchpadTouchDown(),
+                rightControllerScript.TouchpadTouchLeft(),
+                rightControllerScript.TouchpadTouchRight());
+        }
+    }
 
-        if (!rightController.touchpadPressed()) {
-            ButtonHasBeenPressed = false;
-            return;
+    private void ControlMovement(bool up, bool down, bool left, bool right) {
+        // Debug.Log(up + " " + down + " " + left + " " + right);
+        OldPlayerX = playerX;
+        OldPlayerZ = playerZ;
+
+        // The walls within the maze are rotated by a 90 degree angel
+        if (up) {
+            MovePlayerUp();
+        } else if (down) {
+            MovePlayerDown();
+        }
+        if (left) {
+            MovePlayerLeft();
+        } else if (right) {
+            MovePlayerRight();
         }
 
-        if (ButtonHasBeenPressed) {
-            return;
-        }
-        ButtonHasBeenPressed = true;
-
-        if (MazeLoaderScript == null) {
-            if (GameObject.Find("[CameraRig]") != null) {
-                MazeLoaderScript = GameObject.Find("[CameraRig]").GetComponent<MazeLoader>();
-                mazeRows = MazeLoaderScript.mazeRows;
-                mazeColumns = MazeLoaderScript.mazeColumns;
-            }
+        if (validPosition) {
+            Vector3 floorPosition = mazeCells[playerX, playerZ].floor.transform.position;
+            cameraTransform.position = new Vector3(floorPosition.x, -1f, floorPosition.z);
+            playerPositionList.Add(new Vector2(floorPosition.x, floorPosition.z));
+            validPosition = false;
         } else {
-            // Touch Input
-            OldPlayerX = playerX;
-            OldPlayerZ = playerZ;
-            MazeCell[,] mazeCells = MazeLoaderScript.mazeCells;
-            // In maze the walls are rotate 90 degrees left
-            if (rightController.touchpadRight()) { // Rechts
-                playerX = playerX >= MazeLoaderScript.mazeRows - 1 ? playerX : playerX + 1;
-                ValidPosition = mazeCells[OldPlayerX, OldPlayerZ].southWall == null && mazeCells[playerX, playerZ].northWall == null;
-            } else if (rightController.touchpadLeft()) { // Links
-                playerX = playerX <= 0 ? 0 : playerX - 1;
-                ValidPosition = mazeCells[OldPlayerX, OldPlayerZ].northWall == null && mazeCells[playerX, playerZ].southWall == null;
-            }
-            if (rightController.touchpadUp()) { // Oben
-                playerZ = playerZ >= MazeLoaderScript.mazeColumns - 1 ? playerZ : playerZ + 1;
-                ValidPosition = mazeCells[OldPlayerX, OldPlayerZ].eastWall == null && mazeCells[playerX, playerZ].westWall == null;
-            } else if (rightController.touchpadDown()) { // Unten
-                playerZ = playerZ <= 0 ? 0 : playerZ - 1;
-                ValidPosition = mazeCells[OldPlayerX, OldPlayerZ].westWall == null && mazeCells[playerX, playerZ].eastWall == null;
-            }
-            if (ValidPosition) {
-                Vector3 floorPosition = MazeLoaderScript.mazeCells[playerX, playerZ].floor.transform.position;
-                transform.position = new Vector3(floorPosition.x, -1f, floorPosition.z);
-                PlayerPosition.Add(new Vector2(floorPosition.x, floorPosition.z));
-                ValidPosition = false;
-            } else {
-                playerX = OldPlayerX;
-                playerZ = OldPlayerZ;
-            }
+            playerX = OldPlayerX;
+            playerZ = OldPlayerZ;
         }
+    }
+
+    private void MovePlayerUp() {
+        playerZ = playerZ >= mazeColumns - 1 ? playerZ : playerZ + 1;
+        validPosition = mazeCells[OldPlayerX, OldPlayerZ].eastWall == null && mazeCells[playerX, playerZ].westWall == null;
+    }
+
+    private void MovePlayerDown() {
+        playerZ = playerZ <= 0 ? 0 : playerZ - 1;
+        validPosition = mazeCells[OldPlayerX, OldPlayerZ].westWall == null && mazeCells[playerX, playerZ].eastWall == null;
+    }
+
+    private void MovePlayerLeft() {
+        playerX = playerX <= 0 ? 0 : playerX - 1;
+        validPosition = mazeCells[OldPlayerX, OldPlayerZ].northWall == null && mazeCells[playerX, playerZ].southWall == null;
+    }
+
+    private void MovePlayerRight() {
+        playerX = playerX >= mazeRows - 1 ? playerX : playerX + 1;
+        validPosition = mazeCells[OldPlayerX, OldPlayerZ].southWall == null && mazeCells[playerX, playerZ].northWall == null;
     }
 
     private void RunningMovement() {
         // Neue Position berechnen
-        Vector3 newPlayerPosition = transform.position + transform.right * Time.deltaTime * rightController.touchPosition();
-        newPlayerPosition = (newPlayerPosition + transform.right * Time.deltaTime * rightController.touchPosition().x) + transform.forward * Time.deltaTime * 3 * rightController.touchPosition().y;
+        Vector3 newPlayerPosition = cameraTransform.position + cameraTransform.right * Time.deltaTime * rightControllerScript.TouchPosition().x;
+        newPlayerPosition = (newPlayerPosition + transform.right * Time.deltaTime * rightControllerScript.TouchPosition().x) + transform.forward * Time.deltaTime * 3 * rightControllerScript.TouchPosition().y;
 
         bool collision = false;
 
@@ -112,11 +148,9 @@ public class InputScript : MonoBehaviour {
 
         // Wenn nicht geschnitten: Setze, Sonst: ignoriere
         if (!collision) {
-            transform.position = newPlayerPosition;
-            PlayerPosition.Add(new Vector2(newPlayerPosition.x, newPlayerPosition.z));
+            cameraTransform.position = newPlayerPosition;
+            playerPositionList.Add(new Vector2(newPlayerPosition.x, newPlayerPosition.z));
         }
-        // transform.position = transform.position + transform.right * Time.deltaTime * device.GetAxis ().x;
-        // transform.position = (transform.position + transform.right * Time.deltaTime * device.GetAxis ().x) +  transform.forward * Time.deltaTime * 3 * device.GetAxis ().y;
     }
 
     private bool checkForCollision(Vector3 wallPosition, Vector3 wallScale, Vector3 newPlayerPosition) {

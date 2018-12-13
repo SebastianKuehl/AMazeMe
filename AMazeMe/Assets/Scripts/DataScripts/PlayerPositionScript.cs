@@ -6,7 +6,7 @@ public class PlayerPositionScript : MonoBehaviour {
 
 	public int playerX, playerZ;
 
-	private RightControllerScript script;
+	private InputScript script;
 	private bool playerPosChanged;
 
 	void FixedUpdate() {
@@ -23,7 +23,7 @@ public class PlayerPositionScript : MonoBehaviour {
 		if (script == null) {
 			GameObject NonHmdController = GameObject.Find("Controller (right)");
 			if (NonHmdController != null) {
-                script = NonHmdController.GetComponent<RightControllerScript>();
+                script = NonHmdController.GetComponent<InputScript>();
 				return true;
 			}
 			return false;

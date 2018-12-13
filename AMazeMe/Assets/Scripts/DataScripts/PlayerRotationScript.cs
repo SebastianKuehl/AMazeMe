@@ -7,14 +7,14 @@ public class PlayerRotationScript : MonoBehaviour {
 	public int playerYRotation;
 
 	private Transform viveCameraTransform;
-	private GameObject camera;
+	private GameObject cameraObj;
 
 	void Start() {
-		camera = GameObject.Find ("Camera (eye)");
+        cameraObj = GameObject.Find ("Camera (eye)");
 	}
 
 	void FixedUpdate() {
-		viveCameraTransform = camera.GetComponent<Transform>();
+		viveCameraTransform = cameraObj.GetComponent<Transform>();
 		if (viveCameraTransform != null) {
 			this.playerYRotation = (int) (viveCameraTransform.rotation.y * 100);
 		}
