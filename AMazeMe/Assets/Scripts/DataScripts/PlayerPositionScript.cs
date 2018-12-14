@@ -11,17 +11,17 @@ public class PlayerPositionScript : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (controllerFound()) {
-			playerPosChanged = script.playerX != this.playerX || script.playerZ != this.playerZ;
+			playerPosChanged = script.GetPlayerX() != this.playerX || script.GetPlayerZ() != this.playerZ;
 			if (playerPosChanged) {
-				this.playerX = script.playerX;
-				this.playerZ = script.playerZ;
+				this.playerX = script.GetPlayerX();
+				this.playerZ = script.GetPlayerZ();
 			}
 		}
 	}
 
 	private bool controllerFound() {
 		if (script == null) {
-			GameObject NonHmdController = GameObject.Find("Controller (right)");
+			GameObject NonHmdController = GameObject.Find("[CameraRig]");
 			if (NonHmdController != null) {
                 script = NonHmdController.GetComponent<InputScript>();
 				return true;
