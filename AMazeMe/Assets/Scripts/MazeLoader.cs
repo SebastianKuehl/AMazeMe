@@ -18,7 +18,7 @@ public class MazeLoader : MonoBehaviour {
 		MazeAlgorithm ma = new HuntAndKillMazeAlgorithm (mazeCells);
 		ma.CreateMaze ();
 
-		CopyMazeToIntArray ();
+		// CopyMazeToIntArray ();
 	}
 
 	private void InitializeMaze() {
