@@ -369,7 +369,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 35
+  orthographic size: 15
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -466,7 +466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 839b94f93ae88ea4c97ef0a398c20a92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IP: 127.0.0.1
+  IP: 192.173.89.37
   PORT: 8080
   RECONNECT: 1
   RECEIVE: 1
