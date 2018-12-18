@@ -24,6 +24,16 @@ public class MainScript : MonoBehaviour {
     public Tile cornerNorthEastTile;
     public Tile cornerWestSouthTile;
 
+	public Tilemap lineOfSightTilemap;
+	public Tile north;
+	public Tile south;
+	public Tile east;
+	public Tile west;
+	public Tile northeast;
+	public Tile northwest;
+	public Tile southeast;
+	public Tile southwest;
+
     private GameObject gameObj;
     private MazeDataScript mazeDataScript;
     private PlayerPositionScript playerPositionScript;
@@ -33,6 +43,8 @@ public class MainScript : MonoBehaviour {
     private int[,] mazeStructure;
     private List<Vector2> playerPositionList;
     private Vector2 newPosition, lastPosition;
+
+	private Tile lastSightDirectionTile;
 
     void Start () {
         gameObj = GameObject.Find("GameObject");
@@ -145,6 +157,8 @@ public class MainScript : MonoBehaviour {
                 }
             }
         }
+		lineOfSightTilemap.SetTile (new Vector3Int((int)lastPosition.x * 3 + 1, (int)lastPosition.y * 3 + 1, 0), null);
+		lineOfSightTilemap.SetTile (new Vector3Int((int)newPosition.x * 3 + 1, (int)newPosition.y * 3 + 1, 0), GetLineOfSightTile());
     }
 
     private Tile GetTile(int x, int y) {
@@ -206,4 +220,26 @@ public class MainScript : MonoBehaviour {
     private bool VisitedWest(int x, int y) {
         return mazeStructure[x - 1, y] == 1;
     }
+
+	private Tile GetLineOfSightTile() {
+		int direction = playerRotationScript.playerYRotation;
+		if (direction >= -10 && direction <= 10) {
+			lastSightDirectionTile = north;
+			return north;
+		}
+		if (direction >= 55 && direction <= 75) {
+			lastSightDirectionTile = east;
+			return east;
+		}
+		if (direction < -10 && direction >= -80) {
+			lastSightDirectionTile = west;
+			return west;
+		}
+		if (direction >= 85 && direction <= 99) {
+			lastSightDirectionTile = south;
+			return south;
+		}
+
+		return lastSightDirectionTile;
+	}
 }
