@@ -1,6 +1,6 @@
 Android
 SceneListBegin?
-Assets/Scenes/SampleScene.unity
+Assets/FingersLite/Demo/DemoScene.unity
 SceneListEnd?
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Timeline.dll:UnityEngine.Timeline.ActivationPlayableAsset
 dbc29a6f2739d277c10da432d73adb6d UnityEngine.Timeline.dll:UnityEngine.Timeline.ActivationTrack
@@ -284,3 +284,6 @@ d2a2bd333db22f480a8589e167314ecc Vuforia.UnityExtensions.dll:Vuforia.UserDefined
 3d1b89310e77c34bc0c8d7132231345c Vuforia.UnityExtensions.dll:Vuforia.WireframeBehaviour
 05524b8f659e7bfe5756d1335fec24ba Vuforia.UnityExtensions.dll:Vuforia.WireframeTrackableEventHandler
 15bea26698002c6c4a3087131232ce5c Vuforia.UnityExtensions.dll:Vuforia.WordBehaviour
+2a4d123dbbd478b2ded59f64350b913e Assembly-CSharp.dll:DigitalRubyShared.FingersScript
+0afde2503025847eb8cc14581ddb1d5d Assembly-CSharp.dll:DigitalRubyShared.DemoScript
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:DigitalRubyShared.DemoAsteroidScript

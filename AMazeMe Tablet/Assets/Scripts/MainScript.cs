@@ -6,23 +6,9 @@ using UnityEngine;
 public class MainScript : MonoBehaviour {
 
     public Tilemap tilemap;
-    public Tile coveredFloorTile;
-    public Tile allWallTile;
-    public Tile allPillarTile;
-    public Tile twoWallWestEastTile;
-    public Tile twoWallSouthNorthTile;
-    public Tile threeWallNorthTile;
-    public Tile threeWallSouthTile;
-    public Tile threeWallEastTile;
-    public Tile threeWallWestTile;
-    public Tile tCornerNorthTile;
-    public Tile tCornerSouthTile;
-    public Tile tCornerEastTile;
-    public Tile tCornerWestTile;
-    public Tile cornerSouthEastTile;
-    public Tile cornerWestNorthTile;
-    public Tile cornerNorthEastTile;
-    public Tile cornerWestSouthTile;
+	public Tile wall;
+	public Tile floor;
+	public Tile possiblePosition;
 
 	public Tilemap lineOfSightTilemap;
 	public Tile north;
@@ -74,7 +60,7 @@ public class MainScript : MonoBehaviour {
             mazeStructure = new int[mazeRows * 3, mazeColumns * 3];
             for (int i = 0; i < mazeRows * 3; i++) {
                 for (int j = 0; j < mazeColumns * 3; j++) {
-                    tilemap.SetTile(new Vector3Int(i, j, 0), coveredFloorTile);
+					tilemap.SetTile(new Vector3Int(i, j, 0), wall);
                 }
             }
         }
@@ -93,13 +79,11 @@ public class MainScript : MonoBehaviour {
         newPosition.y = playerPositionScript.playerZ; // playerZ because the PC application is in 3D and Y is up/down
         if (playerPositionList.Count <= 0) {
             lastPosition = newPosition;
-            Debug.Log("Adding Position " + newPosition);
             playerPositionList.Add(newPosition); // TODO Check that its not referenced and the values are kept
         } else {
             lastPosition = playerPositionList[playerPositionList.Count - 1];
             if (lastPosition.x != newPosition.x || lastPosition.y != newPosition.y) {
                 playerPositionList.Add(newPosition);
-                Debug.Log("Adding Position " + newPosition);
             }
         }
 
@@ -149,18 +133,22 @@ public class MainScript : MonoBehaviour {
 
     private void UpdateMap() {
         // Go through mazeStructure and place needed tile for each point
+		Tile whiteTile = new Tile();
+		whiteTile.color = Color.white;
+
         for (int i = 1; i < mazeRows * 3 - 1; i++) {
             for (int j = 1; j < mazeColumns * 3 - 1; j++) {
-                // Found a tile that has been visited
-                if (mazeStructure[i, j] == 1) {
-                    tilemap.SetTile(new Vector3Int(i, j, 0), GetTile(i, j));
+				if ((i - 1) % 3 == 0 && (j - 1) % 3 == 0) {
+					tilemap.SetTile (new Vector3Int (i, j, 0), possiblePosition);
+				} else if (mazeStructure[i, j] == 1) {
+					tilemap.SetTile (new Vector3Int (i, j, 0),floor);
                 }
             }
         }
 		lineOfSightTilemap.SetTile (new Vector3Int((int)lastPosition.x * 3 + 1, (int)lastPosition.y * 3 + 1, 0), null);
 		lineOfSightTilemap.SetTile (new Vector3Int((int)newPosition.x * 3 + 1, (int)newPosition.y * 3 + 1, 0), GetLineOfSightTile());
     }
-
+	/*
     private Tile GetTile(int x, int y) {
         string northVisited = VisitedNorth(x, y) ? "North " : "No ";
         string southVisited = VisitedSouth(x, y) ? "South " : "No ";
@@ -204,7 +192,7 @@ public class MainScript : MonoBehaviour {
                 return allWallTile;
         }
     }
-
+*/
     private bool VisitedNorth(int x, int y) {
         return mazeStructure[x, y + 1] == 1;
     }

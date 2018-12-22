@@ -320,29 +320,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 202380889}
-  coveredFloorTile: {fileID: 11400000, guid: baf4a41a44b619849b3fae01ec03ab97, type: 2}
-  allWallTile: {fileID: 11400000, guid: 638ffe2fd59be454d815779c0388f358, type: 2}
-  allPillarTile: {fileID: 11400000, guid: 5bd4de9dd3359114f89e819047badf0b, type: 2}
-  twoWallWestEastTile: {fileID: 11400000, guid: 79976a5632793564d886b6d56cfb89a0,
-    type: 2}
-  twoWallSouthNorthTile: {fileID: 11400000, guid: cb1b774adcce6f54cb0bf1ebaa5fb433,
-    type: 2}
-  threeWallNorthTile: {fileID: 11400000, guid: 931838cfd1f79544bab66e2fddc6f1fb, type: 2}
-  threeWallSouthTile: {fileID: 11400000, guid: d40209d63e7b6ee4ab4ac1625a11a2cb, type: 2}
-  threeWallEastTile: {fileID: 11400000, guid: ffb325f6ef2c08842b3448aeaee9ea89, type: 2}
-  threeWallWestTile: {fileID: 11400000, guid: b195eecad5ba0394a95d4368e85028eb, type: 2}
-  tCornerNorthTile: {fileID: 11400000, guid: 91ec97462a856ae4989c3befd1e1238e, type: 2}
-  tCornerSouthTile: {fileID: 11400000, guid: 1312e8e7ac5afa749b87ab947ff462cc, type: 2}
-  tCornerEastTile: {fileID: 11400000, guid: fe74d46c48129794b98e298f781c290c, type: 2}
-  tCornerWestTile: {fileID: 11400000, guid: f913fb92f8fe7834482e5da261c59661, type: 2}
-  cornerSouthEastTile: {fileID: 11400000, guid: be004a40b16ebe145bd6483d2d3609af,
-    type: 2}
-  cornerWestNorthTile: {fileID: 11400000, guid: 54e07cc8c743c5b4c8d5fb019742768c,
-    type: 2}
-  cornerNorthEastTile: {fileID: 11400000, guid: 5adae062c545180448ec34cf46282d81,
-    type: 2}
-  cornerWestSouthTile: {fileID: 11400000, guid: 8c0c1be5a210f09458894c1a6c183046,
-    type: 2}
+  wall: {fileID: 11400000, guid: 17babf236aadfa54c99d68e8b0776ccb, type: 2}
+  floor: {fileID: 11400000, guid: 7fdf7aff36874844ab4edddedd142787, type: 2}
+  possiblePosition: {fileID: 11400000, guid: 01bdb0e3c09bfb045a7b5793258f93c8, type: 2}
   lineOfSightTilemap: {fileID: 1014579815}
   north: {fileID: 11400000, guid: 6e65707749aa61d4d8d5bb1eb52914a9, type: 2}
   south: {fileID: 11400000, guid: f0e75161cda3d1e4699bbe10ed0f3c75, type: 2}
@@ -361,7 +341,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.20754719, g: 0.18947232, b: 0.1791563, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
