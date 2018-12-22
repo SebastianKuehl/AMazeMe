@@ -5,9 +5,13 @@ public class MazeLoader : MonoBehaviour {
 	public int mazeRows; // x-Axis
 	public int mazeColumns; // z-Axis
 	public GameObject wall;
+	public GameObject floor;
+	public GameObject corner;
+	public GameObject chest;
 	public float size = 2f;
 
 	private MazeCell[,] mazeCells;
+	private Vector3 objectScale;
 	private float width; // x-Axis
 	private float height; // z-Axis
 	private int[,] mazeStructure;
@@ -17,6 +21,23 @@ public class MazeLoader : MonoBehaviour {
 
 		MazeAlgorithm ma = new HuntAndKillMazeAlgorithm (mazeCells);
 		ma.CreateMaze ();
+
+		Vector3 chestLocation = mazeCells[mazeRows - 1, mazeColumns - 1].floor.transform.localPosition;
+		chest = Instantiate (chest, new Vector3 (chestLocation.x, -1.35f, chestLocation.z), Quaternion.identity) as GameObject;
+
+		// Place the cest
+		float tiltAroundY = 0f;
+		bool southWall = mazeCells[mazeRows-2, mazeColumns-1].southWallExists;
+		bool eastWall = mazeCells[mazeRows - 1, mazeColumns-2].eastWallExists;
+		if (!eastWall && !southWall) {
+			tiltAroundY = -130f;
+		} else if (southWall) {
+			tiltAroundY = -180f;
+		} else {
+			tiltAroundY = -90f;
+		}
+		Quaternion target = Quaternion.Euler (0, tiltAroundY, 0);
+		chest.transform.rotation = target;
 
 		// CopyMazeToIntArray ();
 	}
@@ -32,28 +53,45 @@ public class MazeLoader : MonoBehaviour {
 				mazeCells [r, c] = new MazeCell ();
 
 				// For now, use the same wall object for the floor!
-				mazeCells [r, c] .floor = Instantiate (wall, new Vector3 (r*size, -1.5f, c*size), Quaternion.identity) as GameObject;
+				mazeCells [r, c] .floor = Instantiate (floor, new Vector3 (r*size, -1.1f, c*size), Quaternion.identity) as GameObject;
 				mazeCells [r, c] .floor.name = "Floor " + r + "," + c;
-				mazeCells [r, c] .floor.transform.Rotate (Vector3.right, 90f);
-				mazeCells [r, c].floor.transform.localScale = new Vector3 (mazeCells [r, c] .floor.transform.localScale.x, mazeCells [r, c] .floor.transform.localScale.x, mazeCells [r, c] .floor.transform.localScale.z);
+				objectScale = mazeCells [r, c].floor.transform.localScale;
+				mazeCells [r, c].floor.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
 
 				if (c == 0) {
 					mazeCells [r, c].westWall = Instantiate (wall, new Vector3 (r * size, 0, (c * size) - (size / 2f)), Quaternion.identity) as GameObject;
 					mazeCells [r, c].westWall.name = "West Wall " + r + "," + c;
+					objectScale = mazeCells [r, c].westWall.transform.localScale;
+					mazeCells [r, c].westWall.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
 				}
 
 				mazeCells [r, c].eastWall = Instantiate (wall, new Vector3 (r*size, 0, (c*size) + (size/2f)), Quaternion.identity) as GameObject;
 				mazeCells [r, c].eastWall.name = "East Wall " + r + "," + c;
+				objectScale = mazeCells [r, c].eastWall.transform.localScale;
+				mazeCells [r, c].eastWall.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
 
 				if (r == 0) {
 					mazeCells [r, c].northWall = Instantiate (wall, new Vector3 ((r*size) - (size/2f), 0, c*size), Quaternion.identity) as GameObject;
 					mazeCells [r, c].northWall.name = "North Wall " + r + "," + c;
 					mazeCells [r, c].northWall.transform.Rotate (Vector3.up * 90f);
+					objectScale = mazeCells [r, c].northWall.transform.localScale;
+					mazeCells [r, c].northWall.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
 				}
 
 				mazeCells[r,c].southWall = Instantiate (wall, new Vector3 ((r*size) + (size/2f), 0, c*size), Quaternion.identity) as GameObject;
 				mazeCells [r, c].southWall.name = "South Wall " + r + "," + c;
 				mazeCells [r, c].southWall.transform.Rotate (Vector3.up * 90f);
+				objectScale = mazeCells [r, c].southWall.transform.localScale;
+				mazeCells [r, c].southWall.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
+
+			}
+		}
+
+		for (int r = 0; r <= mazeRows; r++) {
+			for (int c = 0; c <= mazeColumns; c++) {
+				GameObject dump = Instantiate (corner, new Vector3 (r*size - size/2f, 0, c*size - size/2f), Quaternion.identity) as GameObject;
+				objectScale = dump.transform.localScale;
+				dump.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
 			}
 		}
 	}
