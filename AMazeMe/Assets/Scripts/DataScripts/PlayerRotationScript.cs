@@ -16,7 +16,10 @@ public class PlayerRotationScript : MonoBehaviour {
 	void FixedUpdate() {
 		viveCameraTransform = cameraObj.GetComponent<Transform>();
 		if (viveCameraTransform != null) {
-			this.playerYRotation = (int) (viveCameraTransform.rotation.y * 100);
-		}
+            int newValue = (int) (viveCameraTransform.eulerAngles.y);
+            if (newValue % 10 == 0 && newValue != playerYRotation) {
+                playerYRotation = newValue;
+            }
+        }
 	}
 }

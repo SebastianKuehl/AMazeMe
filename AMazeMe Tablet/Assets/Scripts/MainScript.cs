@@ -6,19 +6,18 @@ using UnityEngine;
 public class MainScript : MonoBehaviour {
 
     public Tilemap tilemap;
-	public Tile wall;
-	public Tile floor;
+    public Tile player;
+    public Tile floor;
 	public Tile possiblePosition;
-
-	public Tilemap lineOfSightTilemap;
-	public Tile north;
-	public Tile south;
-	public Tile east;
-	public Tile west;
-	public Tile northeast;
-	public Tile northwest;
-	public Tile southeast;
-	public Tile southwest;
+    public Tile cornerSouthEast;
+    public Tile cornerWestNorth;
+    public Tile cornerNorthEast;
+    public Tile cornerWestSouth;
+    public Tile endWest;
+    public Tile endEast;
+    public Tile endSouth;
+    public Tile endNorth;
+    public Tile start;
 
     private GameObject gameObj;
     private MazeDataScript mazeDataScript;
@@ -29,9 +28,7 @@ public class MainScript : MonoBehaviour {
     private int[,] mazeStructure;
     private List<Vector2> playerPositionList;
     private Vector2 newPosition, lastPosition;
-
-	private Tile lastSightDirectionTile;
-
+    
     void Start () {
         gameObj = GameObject.Find("GameObject");
         playerPositionList = new List<Vector2>();
@@ -44,7 +41,6 @@ public class MainScript : MonoBehaviour {
             return;
         }
         HandlePlayerMovement();
-        HandlePlayerRotation();
 
         UpdateMap();
     }
@@ -58,11 +54,6 @@ public class MainScript : MonoBehaviour {
             mazeRows = mazeDataScript.mazeRows;
             mazeColumns = mazeDataScript.mazeColumns;
             mazeStructure = new int[mazeRows * 3, mazeColumns * 3];
-            for (int i = 0; i < mazeRows * 3; i++) {
-                for (int j = 0; j < mazeColumns * 3; j++) {
-					tilemap.SetTile(new Vector3Int(i, j, 0), wall);
-                }
-            }
         }
         return true;
     }
@@ -124,31 +115,23 @@ public class MainScript : MonoBehaviour {
         }
     }
 
-    private void HandlePlayerRotation() {
-        if (!playerRotationScript) {
-            playerRotationScript = gameObj.GetComponentInChildren<PlayerRotationScript>();
-        }
-
-    }
-
     private void UpdateMap() {
         // Go through mazeStructure and place needed tile for each point
-		Tile whiteTile = new Tile();
-		whiteTile.color = Color.white;
-
         for (int i = 1; i < mazeRows * 3 - 1; i++) {
             for (int j = 1; j < mazeColumns * 3 - 1; j++) {
-				if ((i - 1) % 3 == 0 && (j - 1) % 3 == 0) {
-					tilemap.SetTile (new Vector3Int (i, j, 0), possiblePosition);
-				} else if (mazeStructure[i, j] == 1) {
-					tilemap.SetTile (new Vector3Int (i, j, 0),floor);
+                if (mazeStructure[i, j] == 1) {
+                    Tile aTile = GetTile(i, j);
+                    if (i == newPosition.x && j == newPosition.y) {
+                        aTile.color = Color.magenta;
+                    } else {
+                        aTile.color = Color.white;
+                    }
+                    tilemap.SetTile(new Vector3Int(i, j, 0), aTile);
                 }
             }
         }
-		lineOfSightTilemap.SetTile (new Vector3Int((int)lastPosition.x * 3 + 1, (int)lastPosition.y * 3 + 1, 0), null);
-		lineOfSightTilemap.SetTile (new Vector3Int((int)newPosition.x * 3 + 1, (int)newPosition.y * 3 + 1, 0), GetLineOfSightTile());
     }
-	/*
+
     private Tile GetTile(int x, int y) {
         string northVisited = VisitedNorth(x, y) ? "North " : "No ";
         string southVisited = VisitedSouth(x, y) ? "South " : "No ";
@@ -156,43 +139,29 @@ public class MainScript : MonoBehaviour {
         string westVisited = VisitedWest(x, y) ? "West" : "No";
         string result = northVisited + southVisited + eastVisited + westVisited;
         switch(result) {
-            case "North South East West":
-                return allPillarTile;
-            case "North South East No":
-                return tCornerWestTile;
-            case "North South No West":
-                return tCornerEastTile;
-            case "North South No No":
-                return twoWallSouthNorthTile;
-            case "North No East West":
-                return tCornerSouthTile;
             case "North No East No":
-                return cornerNorthEastTile;
+                return cornerNorthEast;
             case "North No No West":
-                return cornerWestNorthTile;
+                return cornerWestNorth;
             case "North No No No":
-                return threeWallNorthTile;
-            case "No South East West":
-                return tCornerNorthTile;
+                return endSouth;
             case "No South East No":
-                return cornerSouthEastTile;
+                return cornerSouthEast;
             case "No South No West":
-                return cornerWestSouthTile;
+                return cornerWestSouth;
             case "No South No No":
-                return threeWallSouthTile;
-            case "No No East West":
-                return twoWallWestEastTile;
+                return endNorth;
             case "No No East No":
-                return threeWallEastTile;
+                return endWest;
             case "No No No West":
-                return threeWallWestTile;
+                return endEast;
             case "No No No No":
-                return allWallTile;
+                return start;
             default:
-                return allWallTile;
+                return floor;
         }
     }
-*/
+
     private bool VisitedNorth(int x, int y) {
         return mazeStructure[x, y + 1] == 1;
     }
@@ -208,26 +177,4 @@ public class MainScript : MonoBehaviour {
     private bool VisitedWest(int x, int y) {
         return mazeStructure[x - 1, y] == 1;
     }
-
-	private Tile GetLineOfSightTile() {
-		int direction = playerRotationScript.playerYRotation;
-		if (direction >= -10 && direction <= 10) {
-			lastSightDirectionTile = north;
-			return north;
-		}
-		if (direction >= 55 && direction <= 75) {
-			lastSightDirectionTile = east;
-			return east;
-		}
-		if (direction < -10 && direction >= -80) {
-			lastSightDirectionTile = west;
-			return west;
-		}
-		if (direction >= 85 && direction <= 99) {
-			lastSightDirectionTile = south;
-			return south;
-		}
-
-		return lastSightDirectionTile;
-	}
 }
