@@ -16,7 +16,7 @@
 \setlength{\topmargin}{-1cm}
 \usepackage{scrpage2}
 \pagestyle{scrheadings}
-\ihead{Fragebogen zum Joystick}
+\ihead{Fragebogen zum HMD-Erlebnis}
 \ohead{\pagemark}
 \chead{}
 \cfoot{}
@@ -166,15 +166,20 @@
 	\end{center}
 	
 	Teilnehmer: \Qline{5cm}
-\section{Fragen zur Benutzererfahrung}
+	\hfill
+	Spiel: \Qline{5cm}
 	
-	% \printtblhdr
+	\section{Fragen zur Benutzererfahrung}
+	
+	Bitte bewerten Sie die folgenden Beschreibungen Ihrer Einsch\"atzung nach an. Die Beschreibungen beziehen sich auf die Erfahrungen, die Sie in Ihrer Rolle erlebt haben und Ihr Spielerlebnis.
+	M\"ochten Sie sich enthalten oder k\"onnen eine Frage (aus nicht zu benennenden Gr\"unden) nicht beantworten, kreuzen Sie bitte eine 4 an.
 	
 	\renewcommand{\arraystretch}{2}
 	\rowcolors{1}{}{lighter-gray}
 	\begin{center}
 		\begin{tabular}{r c l}
 			% https://measuringu.com/sus/
+			\hline
 			unerfreulich & \usetbl & erfreulich\\
 			unverst\"andlich & \usetbl & verst\"andlich\\
 			kreativ & \usetbl & phantasielos\\
@@ -196,74 +201,63 @@
 			aufger\"aumt & \usetbl & \"uberladen\\
 			attraktiv & \usetbl & unattraktiv\\
 			konservativ & \usetbl & innovativ\\
+			\hline
 		\end{tabular} 
 	\end{center}
-
-	% \Qlines{4}
-
-\section{Fragen zur Pr\"asenz}
-
-	\rowcolors{1}{}{white}
+	
+	\section{Fragen zur Pr\"asenz}
+	
+	Bitte kreuzen Sie nachfolgend an, wie sehr Sie den jeweiligen Aussagen zustimmen oder sie ablehnen. M\"ochten Sie sich enthalten oder k\"onnen eine Frage (aus nicht zu benennenden Gr\"unden) nicht beantworten, kreuzen Sie bitte eine 4 an.
+	
+	\rowcolors{2}{}{lighter-gray}
 	\begin{tabular}{p{0.5\textwidth}  l}
 		& \printtblhdr	\\ 
-		\hline
 		1. Ich konnte alle Ereignisse sehr gut kontrollieren. & \usetbl \\
-		\hline
 		2. Die Interaktion mit der Umgebung war sehr nat\"urlich. & \usetbl \\
-		\hline
 		3. Der Bewegungsmechanismus war sehr nat\"urlich. & \usetbl \\
-		\hline
 		4. Ich war mir gar nicht mehr \"uber die reale Welt bewusst. & \usetbl \\
-		\hline
 		5. Die Informationen, die ich von meinen Sinnen erhalten habe, waren komplett konsistent. & \usetbl \\
-		\hline
 		6. Ich konnte alle Folgen meiner Handlungen vorausahnen. & \usetbl \\
-		\hline
 		7. Ich konnte die komplette Umgebung mit meiner Sicht abscannen.  & \usetbl \\
-		\hline
 		8. Die Bewegung in der virtuellen Welt hat mich komplett \"uberzeugt. & \usetbl \\
-		\hline
 		9. Ich war komplett an der Erfahrung mit der virtuellen Welt involviert. & \usetbl \\
-		\hline
 		10. Die Bewegungssteuerung war sehr akzeptabel. & \usetbl \\
-		\hline
 		11. Ich habe keinerlei Verz\"ogerungen zwischen meinen Bewegungsaktionen und ihren erwarteten Folgen gesp\"urt. & \usetbl \\
-		\hline
 		12. Ich konnte mich sehr schnell an das Erlebnis der virtuellen Umwelt anpassen. & \usetbl \\
-		\hline
-		13. Ich habe mein Zeitgef\"uhl komplett verloren. & \usetbl \\
-		\hline
+		13. Ich habe mein Zeitgef\"uhl bei der Bearbeitung der Aufgabe komplett verloren. & \usetbl \\
 	\end{tabular}
 	
-\section{Motionsickness}
-		\begin{center}
-			\begin{tabular}{| l | c | c |}
-				\hline
-				SSQ Items & Augenmuskel & Disorientierung\\
-				\hline
-				1. Allgemeine Unbehaglichkeit & &\\
-				\hline
-				2. Erm\"udung & & \\
-				\hline
-				3. \"Uberanstrengung der Augen &  &\\
-				\hline
-				4. Schwierigkeiten beim Fokussieren & & \\
-				\hline
-				5. Kopfschmerzen & &  \\
-				\hline
-				6. F\"ulle des Kopfes & &  \\
-				\hline
-				7. Blurred vision & &  \\
-				\hline
-				8. Dizzy (eyes closed) & & \\
-				\hline
-				9. Vertigo &  &\\
-				\hline
-				\hline
-				Gesamt &  & \\
-				\hline
-			\end{tabular}
-		\end{center}
-
-	 
+	\newpage
+	\section{Motionsickness}
+	Bitte kreuzen Sie nachfolgend die freien K\"astchen an, bei denen der entsprechende Effekt auf Ihre Augenmuskulatur oder eventuelle Orientierungslosigkeit zutrifft. Trifft ein Effekt nicht zu, kreuzen Sie nichts in der Zeile an.
+	
+	\rowcolors{0}{}{white}
+	\begin{center}
+		\begin{tabular}{| l | c | c |}
+			\hline
+			Effekt & Augenmuskel & Disorientierung\\
+			\hline
+			1. Allgemeine Unbehaglichkeit & &\\
+			\hline
+			2. Erm\"udung & & \\
+			\hline
+			3. \"Uberanstrengung der Augen &  &\\
+			\hline
+			4. Schwierigkeiten beim Fokussieren & & \\
+			\hline
+			5. Kopfschmerzen & &  \\
+			\hline
+			6. F\"ulle des Kopfes & &  \\
+			\hline
+			7. Verschwommene Sicht & &  \\
+			\hline
+			8. Schwindlig (geschlossene Augen) & & \\
+			\hline
+			9. Schwindelig &  &\\
+			\hline
+			\hline
+			Gesamt &  & \\
+			\hline
+		\end{tabular}
+	\end{center}
 \end{document}

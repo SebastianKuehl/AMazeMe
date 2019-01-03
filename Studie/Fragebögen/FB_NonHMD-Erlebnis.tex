@@ -16,7 +16,7 @@
 \setlength{\topmargin}{-1cm}
 \usepackage{scrpage2}
 \pagestyle{scrheadings}
-\ihead{Fragebogen zur VR-Brille}
+\ihead{Fragebogen zum Nicht-HMD-Erlebnis}
 \ohead{\pagemark}
 \chead{}
 \cfoot{}
@@ -135,7 +135,7 @@
 	\hfill
 	\begingroup
 	\setlength\tabcolsep{0pt}%
-	\begin{tabularx}{0.4\textwidth}{ @{} l *{3}X r @{} }
+	\begin{tabularx}{0.5\textwidth}{ @{} l *{3}X r @{} }
 		\multicolumn{2}{l}{\bfseries\shortstack[l]{Komplett\\abgelehnt}}
 		&&
 		\multicolumn{2}{l}{\bfseries\shortstack[r]{Komplett\\zugestimmt}}
@@ -145,9 +145,15 @@
 }
 
 \newcommand{\usetbl}{%
-	\begin{tabular}{@{}|*5{P|}@{}}
+	\begin{tabular}{@{}*7{P}@{}}
+		1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+	\end{tabular}
+}
+
+\newcommand{\usetblNew}{%
+	\begin{tabular}{@{}|*7{P|}@{}}
 		\hline
-		1 & 2 & 3 & 4 & 5 \\
+		1 & 2 & 3 & 4 & 5 & 6 & 7 \\
 		\hline
 	\end{tabular}
 }
@@ -156,115 +162,111 @@
 \begin{document}
 	
 	\begin{center}
-		\textbf{\huge Fragebogen zum VR-Brillen-gesteuerten Viewport}
+		\textbf{\huge Fragebogen zum Nicht-HMD-Erlebnis}
 	\end{center}
 	
 	Teilnehmer: \Qline{5cm}
-	\section{System Usability}
+	\hfill
+	Spiel: \Qline{5cm}
 	
-	\printtblhdr
+	\section{Fragen zur Benutzererfahrung}
 	
+	Bitte bewerten Sie die folgenden Beschreibungen Ihrer Einsch\"atzung nach an. Die Beschreibungen beziehen sich auf die Erfahrungen, die Sie in Ihrer Rolle erlebt haben und Ihr Spielerlebnis.
+	M\"ochten Sie sich enthalten oder k\"onnen eine Frage (aus nicht zu benennenden Gr\"unden) nicht beantworten, kreuzen Sie bitte eine 4 an.
 	\renewcommand{\arraystretch}{2}
 	\rowcolors{1}{}{lighter-gray}
-	\begin{tabular}{p{0.575\textwidth}  l}
-		% https://measuringu.com/sus/
-		1. Ich denke ich w\"urde das System \"ofters benutzen wollen. & \usetbl \\
-		2. Ich fand das System unn\"otig komplex. & \usetbl \\
-		3. Ich fand das System einfach zu benutzen. & \usetbl \\
-		4. Ich glaube ich br\"auchte Hilfe/Unterst\"utzung von einer technisch erfahreneren Person, um das System benutzen zu k\"onnen. & \usetbl \\
-		5. Ich fand die verschiedenen Funktionalit\"aten des Systems waren gut integriert. & \usetbl \\
-		6. Ich dachte es gab zu viel Inkonsistenz in dem System. & \usetbl \\
-		7. Ich k\"onnte mir vorstellen, dass viele Personen die Benutzung des Systems schnell erlernen w\"urden. & \usetbl \\
-		8. Ich fand das System in der Benutzung sehr schwerf\"allig. & \usetbl \\
-		9. Ich war bei der Benutzung des Systems sehr selbstbewusst. & \usetbl \\
-		10. Ich musste viele Dinge lernen, bevor ich mit dem System arbeiten konnte. & \usetbl \\		
-	\end{tabular} 
+	\begin{center}
+		\begin{tabular}{r c l}
+			% https://measuringu.com/sus/
+			\hline
+			unerfreulich & \usetbl & erfreulich\\
+			unverst\"andlich & \usetbl & verst\"andlich\\
+			kreativ & \usetbl & phantasielos\\
+			leicht zu lernen & \usetbl & schwer zu lernen\\
+			langweilig & \usetbl & spanned\\
+			uninteressant & \usetbl & interessant\\
+			unberechenbar & \usetbl & voraussagbar\\
+			schnell & \usetbl & langsam\\
+			originiell & \usetbl & konventionell\\
+			behindernt & \usetbl & unterst\"utzend\\
+			kompliziert & \usetbl & einfach\\
+			absto\ss{}end & \usetbl & anziehend\\
+			unangenehm & \usetbl & angenenehm\\
+			sicher & \usetbl & unsicher\\
+			aktivierend & \usetbl & einschl\"afernd\\
+			ineffizient & \usetbl & effizient\\
+			\"ubersichtlich & \usetbl & verwirrend\\
+			unpragmatisch & \usetbl & pragmatisch\\
+			aufger\"aumt & \usetbl & \"uberladen\\
+			attraktiv & \usetbl & unattraktiv\\
+			konservativ & \usetbl & innovativ\\
+			\hline
+		\end{tabular} 
+	\end{center}
 	
-	Weitere Anmerkungen:
-	\Qlines{4}
+	\section{Fragen zur Pr\"asenz}
 	
-	\section{Steuerung}
+	Bitte kreuzen Sie nachfolgend an, wie sehr Sie den jeweiligen Aussagen zustimmen oder sie ablehnen. M\"ochten Sie sich enthalten oder k\"onnen eine Frage (aus nicht zu benennenden Gr\"unden) nicht beantworten, kreuzen Sie bitte eine 4 an.
 	
-	\rowcolors{1}{}{white}
-	\printtblhdr	
-	\rowcolors{1}{}{lighter-gray}
-	\begin{tabular}{p{0.575\textwidth}  l}
-		% https://measuringu.com/sus/
-		1. Ich fand die Steuerung des Systems schnell erlernbar. & \usetbl \\
-		2. Ich fand die Steuerung des Systems angenehm. & \usetbl \\
-		3. Ich finde die Steuerung des Systems k\"onnte angepasst werden. & \usetbl \\
-		4. Ich finde die Steuerung des Systems mit einem realen Fernglas vergleichbar. & \usetbl \\
-		5. Ich wusste sofort, wie ich das System steuern kann. & \usetbl \\
-		6. Meine Eingabe bei der Steuerung des Systems hat genau den Effekt erzielt, den ich erwartet habe. & \usetbl \\
-		7. Ich f\"uhlte mich bei der Steuerung des Systems in der Bewegung eingeschr\"ankt. & \usetbl \\
-		8. Ich f\"uhlte mich bei der Steuerung des Systems selbstbewusst. & \usetbl \\
-		9. Ich konnte mich w\"ahrend der Benutzung des Systems frei Bewegen. & \usetbl \\
-		10. Nach einer Pause bei der Benutzung des Systems musste ich Korrekturen des Bildausschnitts durch erneutes Steuern des Systems vornehmen. & \usetbl \\
+	\rowcolors{2}{}{lighter-gray}
+	\vspace{-0.1cm}
+	\hspace{-1.5cm}
+	\begin{tabular}{p{0.6\textwidth}  l}
+		& \printtblhdr	\\ 
+		\hline
+		1. Ich konnte alle Ereignisse sehr gut kontrollieren. & \usetbl \\
+		2. Die Interaktion mit der Umgebung war sehr nat\"urlich. & \usetbl \\
+		3. Die Umgebung hat sofort auf meine Aktionen reagiert. & \usetbl \\
+		4. Der Bewegungsmechanismus war sehr nat\"urlich. & \usetbl \\
+		5. Ich konnte mich durch die graphische Darstellung stark in das Spiel hinein versetzen. & \usetbl \\
+		6. Ich war mir gar nicht mehr \"uber die reale Welt bewusst. & \usetbl \\
+		7. Ich konnte alle Folgen meiner Handlungen vorausahnen. & \usetbl \\
+		8. Den Display und Controller habe ich so gar nicht wahr genommen. & \usetbl \\
+		9. Alle Objekte im virtuellen Bereich haben sich r\"aumlich sehr angenehm bewegt. & \usetbl \\
+		10. Die Bewegung in der virtuellen Welt hat mich komplett \"uberzeugt. & \usetbl \\
+		11. Ich war komplett an der Erfahrung mit der virtuellen Welt involviert. & \usetbl \\
+		12. Ich konnte mich sehr gut mit Ber\"uhrungsgesten umgucken/informieren. & \usetbl \\
+		13. Die Bewegungssteuerung war sehr akzeptabel. & \usetbl \\
+		14. Ich habe keinerlei Verz\"ogerungen zwischen meinen Bewegungsaktionen und ihren erwarteten Folgen gesp\"urt. & \usetbl \\
+		15. Ich konnte mich sehr schnell an das Erlebnis der virtuellen Umwelt anpassen. & \usetbl \\
+		16. Ich habe mein Zeitgef\"uhl bei der Bearbeitung der Aufgabe komplett verloren. & \usetbl \\
+		17. Die Ger\"ate haben mich gar nicht bei der Ausf\"uhrung meiner Aufgabe gehindert. & \usetbl \\
+		18. Ich konnte mich komplett auf die Ausf\"uhrung der Aufgabe konzentrieren und war nicht durch die Eingabeger\"ate abgelenkt oder gehindert. & \usetbl \\
+		19. Ich habe mich mit der Fortbewegungs- und Interaktionsmethodik nach dem Experiment sehr selbstbewusst gef\"uhlt. & \usetbl \\
+		\hline
 	\end{tabular}
 	
-	Weitere Anmerkungen zur Steuerung:
-	\Qlines{4}
+	\newpage
+	\section{Motionsickness}
+	Bitte kreuzen Sie nachfolgend die freien K\"astchen an, bei denen der entsprechende Effekt auf Ihre Augenmuskulatur oder eventuelle Orientierungslosigkeit zutrifft. Trifft ein Effekt nicht zu, kreuzen Sie nichts in der Zeile an.
 	
-	\section{Graphische Darstellung/Inhalt/Anzeige}
-	
-	\rowcolors{1}{}{white}
-	\printtblhdr	
-	\rowcolors{1}{}{lighter-gray}
-	\begin{tabular}{p{0.575\textwidth}  l}
-		% https://measuringu.com/sus/
-		1. Ich fand die Aufl\"osung des Systems hoch genug. & \usetbl \\
-		2. Der Bildschirm des Systems k\"onnte gr\"o\ss{}er sein. & \usetbl \\
-		3. Ich fand den Sichtbereich des Systems gro\ss{} genug. & \usetbl \\
-		4. Ich konnte Objekte in der Darstellung mit dem System schnell erkennen. & \usetbl \\
-		5. Ich konnte Details mit dem System genau erkennen. & \usetbl \\
-		6. Ich fand das angezeigte Bild des Systems mit dem eines Fernglases vergleichbar. & \usetbl \\
-		7. Ich fand die Zoomst\"arke des Systems mit der eines Fernglases vergleichbar. & \usetbl \\
-		8. Graphische Effekte wie Vignette w\"urden das System realistischer machen. & \usetbl \\
-	\end{tabular} \par
-	
-	Weitere Anmerkungen zur graphischen Darstellung/Inhalt/Anzeige:
-	\Qlines{4}
-	
-	\section{Gebrauchstauglichkeit}
-	
-	\rowcolors{1}{}{white}
-	\printtblhdr	
-	\rowcolors{1}{}{lighter-gray}
-	\begin{tabular}{p{0.575\textwidth}  l}
-		% https://measuringu.com/sus/
-		1. Ich konnte Objekte mit dem System schnell finden. & \usetbl \\
-		2. Ich musste mich bei der Benutzung des Systems konzentrieren. & \usetbl \\
-		3. Ich hatte Schwierigkeiten bei der Benutzung des Systems. & \usetbl \\
-		4. Ich fand die Handhabung des Systems mit der eines Fernglases vergleichbar. & \usetbl \\
-		5. Ich k\"onnte das System \"uber l\"angere Zeit benutzen. & \usetbl \\
-		6. Ich konnte das System nach Nicht-Benutzung schnell aufgreifen und benutzen. & \usetbl \\
-		7. Ich hatte Schwierigkeiten das System nach erfolgreicher Benutzung ab-/wegzulegen. & \usetbl \\
-	\end{tabular} \par
-	
-	\newpage 
-	
-	Weitere Anmerkungen zur Gebrauchstauglichkeit:
-	\Qlines{4}
-	
-	\section{R\"aumliche Wahrnehmung}
-	
-	\rowcolors{1}{}{white}
-	\printtblhdr	
-	\rowcolors{1}{}{lighter-gray}
-	\begin{tabular}{p{0.575\textwidth}  l}
-		% https://measuringu.com/sus/
-		1. Bei der Benutzung des Systems hatte ich ein Gef\"uhl der r\"aumlichen Wahrnehmung. & \usetbl \\
-		2. Ich finde das System erzeugt den Effekt von Tiefe und Raum. & \usetbl \\
-		3. Ich finde der 3D Effekt des Systems k\"onnte verbessert werden. & \usetbl \\
-		4. Ich k\"onnte das System auch \"uber l\"angere Zeit betrachten. & \usetbl \\
-		5. Ich habe meine reale Umgebung bei der Benutzung des Systems nicht wahrgenommen. & \usetbl \\
-		6. Ich habe die Darstellung des Systems als Bild und nicht als r\"aumliche Darstellung wahrgenommen. & \usetbl \\
-		7. Ich hatte bei dem System das Gef\"uhl, dass die virtuelle Welt hinter mir weiter ginge. & \usetbl \\
-		8. Ich hatte bei dem System das Gef\"uhl die gezeigten Gegenst\"ande greifen zu k\"onnen. & \usetbl \\
-		9. Ich hatte bei dem System das Gef\"uhl im virtuellen Raum anwesend zu sein. & \usetbl \\
-	\end{tabular} \par
-	
-	Weitere Anmerkungen zur r\"aumlichen Wahrnehmung:
-	\Qlines{4}
-	
+	\rowcolors{0}{}{white}
+	\begin{center}
+		\begin{tabular}{| l | c | c |}
+			\hline
+			Effekt & Augenmuskel & Disorientierung\\
+			\hline
+			1. Allgemeine Unbehaglichkeit & &\\
+			\hline
+			2. Erm\"udung & & \\
+			\hline
+			3. \"Uberanstrengung der Augen &  &\\
+			\hline
+			4. Schwierigkeiten beim Fokussieren & & \\
+			\hline
+			5. Kopfschmerzen & &  \\
+			\hline
+			6. F\"ulle des Kopfes & &  \\
+			\hline
+			7. Verschwommene Sicht & &  \\
+			\hline
+			8. Schwindlig (geschlossene Augen) & & \\
+			\hline
+			9. Schwindelig &  &\\
+			\hline
+			\hline
+			Gesamt &  & \\
+			\hline
+		\end{tabular}
+	\end{center}
 \end{document}
