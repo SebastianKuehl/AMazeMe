@@ -5,7 +5,9 @@ using UnityEngine;
 public class InputScript : MonoBehaviour {
 
     public bool inputByKeyboard = true;
-   
+    public bool useMarker = true;
+    public bool cheatMode = false;
+
     private GameObject rightController;
     private ViveControllerScript rightControllerScript;
     private Transform cameraTransform;
@@ -14,8 +16,9 @@ public class InputScript : MonoBehaviour {
     private Vector3 playerPosition;
     private bool validPosition;
     private MazeCell[,] mazeCells;
-	private int[,] mazeStructure;
-	private int playerX, playerZ, OldPlayerX, OldPlayerZ, mazeRows, mazeColumns;
+    private int[,] mazeStructure;
+    private int playerX, playerZ, OldPlayerX, OldPlayerZ, mazeRows, mazeColumns, mazeSize;
+    private int markerX, markerZ, oldMarkerX, oldMarkerZ;
 
     void Start() {
         rightController = GameObject.Find("Controller (right)");
@@ -23,17 +26,7 @@ public class InputScript : MonoBehaviour {
 
     void FixedUpdate() {
         // Load all the needed data if not done before
-        if (MazeLoaderScript == null) {
-            GameObject cameraRig = GameObject.Find("[CameraRig]");
-            if (cameraRig != null) {
-                cameraTransform = cameraRig.GetComponent<Transform>();
-                MazeLoaderScript = cameraRig.GetComponent<MazeLoader>();
-                mazeRows = MazeLoaderScript.mazeRows;
-                mazeColumns = MazeLoaderScript.mazeColumns;
-				mazeCells = MazeLoaderScript.GetMazeCells();
-				mazeStructure = MazeLoaderScript.GetMazeStructure ();
-            }
-        } else {
+        if (MazeLoaderScriptLoaded()) {
             // Handle the chosen method of input
             if (inputByKeyboard) {
                 HandleKeyboardInput();
@@ -43,8 +36,26 @@ public class InputScript : MonoBehaviour {
         }
     }
 
+    private bool MazeLoaderScriptLoaded() {
+        if (MazeLoaderScript == null) {
+            GameObject cameraRig = GameObject.Find("[CameraRig]");
+            if (cameraRig != null) {
+                cameraTransform = cameraRig.GetComponent<Transform>();
+                MazeLoaderScript = cameraRig.GetComponent<MazeLoader>();
+                mazeRows = MazeLoaderScript.mazeRows;
+                mazeColumns = MazeLoaderScript.mazeColumns;
+                mazeCells = MazeLoaderScript.GetMazeCells();
+                mazeStructure = MazeLoaderScript.GetMazeStructure();
+                mazeSize = MazeLoaderScript.GetMazeSize();
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
     private void HandleKeyboardInput() {
-        ControlMovement(Input.GetKeyDown("w"), Input.GetKeyDown("s"), Input.GetKeyDown("a"), Input.GetKeyDown("d"));
+        ControlMovement(Input.GetKeyDown("w"), Input.GetKeyDown("s"), Input.GetKeyDown("a"), Input.GetKeyDown("d"), Input.GetKeyDown(KeyCode.Space));
     }
 
     private void HandleControllerInput() {
@@ -54,31 +65,76 @@ public class InputScript : MonoBehaviour {
             rightControllerScript = rightController.GetComponent<ViveControllerScript>();
         } else {
             if (rightControllerScript.TouchpadPressed()) {
-				ControlMovement(rightControllerScript.TouchpadTouchUp(),
-					rightControllerScript.TouchpadTouchDown(),
-					rightControllerScript.TouchpadTouchLeft(),
-					rightControllerScript.TouchpadTouchRight());
+                ControlMovement(rightControllerScript.TouchpadTouchUp(),
+                    rightControllerScript.TouchpadTouchDown(),
+                    rightControllerScript.TouchpadTouchLeft(),
+                    rightControllerScript.TouchpadTouchRight(),
+                    rightControllerScript.TriggerDown());
             }
         }
     }
 
-    private void ControlMovement(bool up, bool down, bool left, bool right) {
+    private void ControlMovement(bool up, bool down, bool left, bool right, bool confirm) {
         OldPlayerX = playerX;
         OldPlayerZ = playerZ;
+        oldMarkerX = markerX;
+        oldMarkerZ = markerZ;
 
-        // The walls within the maze are rotated by a 90 degree angel
-        if (up) {
-            MovePlayerUp();
-        } else if (down) {
-            MovePlayerDown();
-        }
-        if (left) {
-            MovePlayerLeft();
-        } else if (right) {
-            MovePlayerRight();
-        }
+        if (useMarker) {
+            if (confirm && (markerX != playerX || markerZ != playerZ)) {
+                // Move Player towars marker
+                TeleportInStraightLine();
+            }
+            // Move Marker towards direction
+            if (up) {
+                markerZ = markerZ >= mazeColumns - 1 ? markerZ : markerZ + 1;
+            } else if (down) {
+                markerZ = markerZ <= 0 ? 0 : markerZ - 1;
+            }
+            if (left) {
+                markerX = markerX <= 0 ? 0 : markerX - 1;
+            } else if (right) {
+                markerX = markerX >= mazeRows - 1 ? markerX : markerX + 1;
+            }
+        } else {
+            // The walls within the maze are rotated by a 90 degree angel
+            if (up) {
+                MovePlayerUp();
+            } else if (down) {
+                MovePlayerDown();
+            }
+            if (left) {
+                MovePlayerLeft();
+            } else if (right) {
+                MovePlayerRight();
+            }
 
-        if (validPosition) {
+            RefreshPlayerPosition();
+        }
+    }
+
+    private void MovePlayerUp() {
+        playerZ = playerZ >= mazeColumns - 1 ? playerZ : playerZ + 1;
+        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].eastWallExists && !mazeCells[playerX, playerZ].westWallExists;
+    }
+
+    private void MovePlayerDown() {
+        playerZ = playerZ <= 0 ? 0 : playerZ - 1;
+        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].westWallExists && !mazeCells[playerX, playerZ].eastWallExists;
+    }
+
+    private void MovePlayerLeft() {
+        playerX = playerX <= 0 ? 0 : playerX - 1;
+        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].northWallExists && !mazeCells[playerX, playerZ].southWallExists;
+    }
+
+    private void MovePlayerRight() {
+        playerX = playerX >= mazeRows - 1 ? playerX : playerX + 1;
+        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].southWallExists && !mazeCells[playerX, playerZ].northWallExists;
+    }
+
+    private void RefreshPlayerPosition() {
+        if (validPosition || cheatMode) {
             Vector3 floorPosition = mazeCells[playerX, playerZ].floor.transform.position;
             cameraTransform.position = new Vector3(floorPosition.x, -1f, floorPosition.z);
             validPosition = false;
@@ -88,31 +144,54 @@ public class InputScript : MonoBehaviour {
         }
     }
 
-    private void MovePlayerUp() {
-        playerZ = playerZ >= mazeColumns - 1 ? playerZ : playerZ + 1;
-        validPosition = mazeCells[OldPlayerX, OldPlayerZ].eastWall == null && mazeCells[playerX, playerZ].westWall == null;
+    private void TeleportInStraightLine() {
+        // Both axis are not on line
+        if (markerX != playerX && markerZ != playerZ) {
+            return;
+        }
+
+        if (markerX == playerX) {
+            // Teleport on Y-Axis
+            int steps = Mathf.Abs(markerZ - playerZ);
+            for (int i = 0; i < steps; i++) {
+                if (markerZ > playerZ) {
+                    MovePlayerUp();
+                } else {
+                    MovePlayerDown();
+                }
+                RefreshPlayerPosition();
+            }
+        } else {
+            // Teleport on X-Axis
+            int steps = Mathf.Abs(markerX - playerX);
+            for (int i = 0; i < steps; i++) {
+                if (markerX > playerX) {
+                    MovePlayerRight();
+                } else {
+                    MovePlayerLeft();
+                }
+                RefreshPlayerPosition();
+            }
+        }
     }
 
-    private void MovePlayerDown() {
-        playerZ = playerZ <= 0 ? 0 : playerZ - 1;
-        validPosition = mazeCells[OldPlayerX, OldPlayerZ].westWall == null && mazeCells[playerX, playerZ].eastWall == null;
-    }
-
-    private void MovePlayerLeft() {
-        playerX = playerX <= 0 ? 0 : playerX - 1;
-        validPosition = mazeCells[OldPlayerX, OldPlayerZ].northWall == null && mazeCells[playerX, playerZ].southWall == null;
-    }
-
-    private void MovePlayerRight() {
-        playerX = playerX >= mazeRows - 1 ? playerX : playerX + 1;
-        validPosition = mazeCells[OldPlayerX, OldPlayerZ].southWall == null && mazeCells[playerX, playerZ].northWall == null;
-    }
-
-	public int GetPlayerX() {
+    public int GetPlayerX() {
 		return playerX;
 	}
 
 	public int GetPlayerZ() {
 		return playerZ;
 	}
+
+    public int GetMarkerX() {
+        return markerX;
+    }
+
+    public int GetMarkerZ() {
+        return markerZ;
+    }
+
+    public bool UsesMarker() {
+        return useMarker;
+    }
 }

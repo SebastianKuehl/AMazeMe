@@ -102,7 +102,6 @@ public class TouchControl : MonoBehaviour
 	}
 
 	void ZoomCamera(float offset, float speed) {
-		Debug.Log (offset);
 		if (offset == 0) {
 			return;
 		}

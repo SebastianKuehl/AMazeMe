@@ -43,4 +43,8 @@ public class ViveControllerScript : MonoBehaviour {
     public Vector2 TouchPosition() {
         return device.GetAxis();
     }
+
+    public bool TriggerDown() {
+        return device.GetPressDown(SteamVR_Controller.ButtonMask.Trigger);
+    }
 }

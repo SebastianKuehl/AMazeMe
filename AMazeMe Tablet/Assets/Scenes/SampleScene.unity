@@ -399,7 +399,7 @@ MonoBehaviour:
   tilemap: {fileID: 202380889}
   player: {fileID: 11400000, guid: aacde18b226f524419f1a6b099995fcb, type: 2}
   floor: {fileID: 11400000, guid: 02287b740f8519244b5c644043dc2db8, type: 2}
-  possiblePosition: {fileID: 11400000, guid: b3a54e1dc43a7e04f8bac102ac1ec8a0, type: 2}
+  markerPosition: {fileID: 11400000, guid: b3a54e1dc43a7e04f8bac102ac1ec8a0, type: 2}
   cornerSouthEast: {fileID: 11400000, guid: 1b9da6086093e34408e2029653c68ba0, type: 2}
   cornerWestNorth: {fileID: 11400000, guid: 92ce1bfb7f9ff38429a2f0c194307c5c, type: 2}
   cornerNorthEast: {fileID: 11400000, guid: ed9bfea48d914b44b924e1350167902d, type: 2}
@@ -650,7 +650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fb0b4392b2971b4583a08c715efa482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IP: 134.106.52.63
+  IP: 127.0.0.1
   PORT: 8080
   RECONNECT: 1
   RECEIVE: 1

@@ -52,7 +52,6 @@ public class MazeLoader : MonoBehaviour {
 	}
 
 	private void InitializeMaze() {
-
 		mazeCells = new MazeCell[mazeRows, mazeColumns];
 
 		// TODO Set position of second camera to center of plane
@@ -102,14 +101,6 @@ public class MazeLoader : MonoBehaviour {
 			}
 		}
 	}
-    
-	public int[,] GetMazeStructure() {
-		return mazeStructure;
-	}
-
-	public MazeCell[,] GetMazeCells() {
-		return mazeCells;
-	}
 
     private GameObject GetRandomWall() {
         float randomNumber = Random.value;
@@ -138,5 +129,17 @@ public class MazeLoader : MonoBehaviour {
         } else {
             return wall12;
         }
+    }
+
+    public int[,] GetMazeStructure() {
+        return mazeStructure;
+    }
+
+    public MazeCell[,] GetMazeCells() {
+        return mazeCells;
+    }
+
+    public int GetMazeSize() {
+        return (int)size;
     }
 }
