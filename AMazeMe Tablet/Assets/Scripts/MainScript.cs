@@ -121,11 +121,6 @@ public class MainScript : MonoBehaviour {
             for (int j = 1; j < mazeColumns * 3 - 1; j++) {
                 if (mazeStructure[i, j] == 1) {
                     Tile aTile = GetTile(i, j);
-                    if (i == newPosition.x && j == newPosition.y) {
-                        aTile.color = Color.magenta;
-                    } else {
-                        aTile.color = Color.white;
-                    }
                     tilemap.SetTile(new Vector3Int(i, j, 0), aTile);
                 }
             }
@@ -133,6 +128,9 @@ public class MainScript : MonoBehaviour {
     }
 
     private Tile GetTile(int x, int y) {
+		if (x == newPosition.x * 3 + 1 && y == newPosition.y * 3 + 1) {
+			return player;
+		}
         string northVisited = VisitedNorth(x, y) ? "North " : "No ";
         string southVisited = VisitedSouth(x, y) ? "South " : "No ";
         string eastVisited = VisitedEast(x, y) ? "East " : "No ";
