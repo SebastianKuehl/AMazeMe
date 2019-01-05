@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputScript : MonoBehaviour {
 
-    public bool inputByKeyboard = true;
+    public bool inputByKeyboard = false;
     public bool useMarker = true;
     public bool cheatMode = false;
 
@@ -55,7 +55,8 @@ public class InputScript : MonoBehaviour {
     }
 
     private void HandleKeyboardInput() {
-        ControlMovement(Input.GetKeyDown("w"), Input.GetKeyDown("s"), Input.GetKeyDown("a"), Input.GetKeyDown("d"), Input.GetKeyDown(KeyCode.Space));
+        ControlMovement(Input.GetKeyDown("w"), Input.GetKeyDown("s"), Input.GetKeyDown("a"), Input.GetKeyDown("d"));
+		ApplyChanges (Input.GetKeyDown(KeyCode.Space));
     }
 
     private void HandleControllerInput() {
@@ -68,23 +69,32 @@ public class InputScript : MonoBehaviour {
                 ControlMovement(rightControllerScript.TouchpadTouchUp(),
                     rightControllerScript.TouchpadTouchDown(),
                     rightControllerScript.TouchpadTouchLeft(),
-                    rightControllerScript.TouchpadTouchRight(),
-                    rightControllerScript.TriggerDown());
+                    rightControllerScript.TouchpadTouchRight());
             }
+			if (rightControllerScript.TriggerDown()) {
+				Debug.Log ("Trigger");
+			}
+			ApplyChanges (rightControllerScript.TriggerDown());
         }
     }
 
-    private void ControlMovement(bool up, bool down, bool left, bool right, bool confirm) {
+	private void ApplyChanges(bool confirm) {
+		if (useMarker) {
+			if (confirm && (markerX != playerX || markerZ != playerZ)) {
+				// Move Player towars marker
+				TeleportInStraightLine ();
+			}
+		} else {
+			RefreshPlayerPosition();
+		}
+	}
+
+	private void ControlMovement(bool up, bool down, bool left, bool right) {
         OldPlayerX = playerX;
         OldPlayerZ = playerZ;
         oldMarkerX = markerX;
         oldMarkerZ = markerZ;
-
         if (useMarker) {
-            if (confirm && (markerX != playerX || markerZ != playerZ)) {
-                // Move Player towars marker
-                TeleportInStraightLine();
-            }
             // Move Marker towards direction
             if (up) {
                 markerZ = markerZ >= mazeColumns - 1 ? markerZ : markerZ + 1;
@@ -108,8 +118,6 @@ public class InputScript : MonoBehaviour {
             } else if (right) {
                 MovePlayerRight();
             }
-
-            RefreshPlayerPosition();
         }
     }
 

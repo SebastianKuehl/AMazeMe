@@ -3,8 +3,9 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 1
@@ -12,7 +13,7 @@ MonoBehaviour:
   m_Name: TilemapGraphiken_V2_10
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300020, guid: fb60140eed1e88541b07aaee7b13e203, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.21226418, g: 0.25736263, b: 1, a: 1}
   m_Transform:
     e00: 1
     e01: 0

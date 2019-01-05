@@ -650,7 +650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fb0b4392b2971b4583a08c715efa482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IP: 127.0.0.1
+  IP: 134.106.52.63
   PORT: 8080
   RECONNECT: 1
   RECEIVE: 1
