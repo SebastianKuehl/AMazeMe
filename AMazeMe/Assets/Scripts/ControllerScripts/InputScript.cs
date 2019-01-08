@@ -15,37 +15,63 @@ public class InputScript : MonoBehaviour {
     private ViveControllerScript rightControllerScript;
     private Transform cameraTransform;
     private MazeLoader MazeLoaderScript;
-    private Vector2 wallPosition;
-    private Vector3 playerPosition;
     private bool validPosition;
     private MazeCell[,] mazeCells;
+    private List<Breadcrumb> breadcrumbs;
+    private GameObject[] lootObjects;
+    private int lootcounter;
     private int playerX, playerZ, OldPlayerX, OldPlayerZ, mazeRows, mazeColumns, mazeSize;
     private int markerX, markerZ, oldMarkerX, oldMarkerZ;
 
     void Awake() {
         rightController = GameObject.Find("Controller (right)");
+        lootObjects = GameObject.FindGameObjectsWithTag("Loot");
+        foreach (GameObject obj in lootObjects) {
+            Component[] items = obj.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in items) {
+                renderer.enabled = false;
+            }
+        }
     }
 
     void FixedUpdate() {
         
-        if (wonTheGame) {
+        if (wonTheGame || !MazeLoaderScriptLoaded()) {
             return;
         }
 
-        // Load all the needed data if not done before
-        if (MazeLoaderScriptLoaded()) {
-            // Handle the chosen method of input
-            if (inputByKeyboard) {
-                HandleKeyboardInput();
-            } else {
-                HandleControllerInput();
+        // Handle the chosen method of input
+        if (inputByKeyboard) {
+            HandleKeyboardInput();
+        } else {
+            HandleControllerInput();
+        }
+
+        // Collect breadcrumbs if player stands on one
+        Vector2 currentPos = new Vector2(playerX, playerZ);
+        foreach (Breadcrumb container in breadcrumbs) {
+            if (container.position != currentPos) {
+                continue;
             }
-            // If the player stands on the chest in the maze he gets teleported to the treasure room
-            if (playerX == mazeRows - 1 && playerZ == mazeColumns - 1) {
-                wonTheGame = true;
-                Vector3 targetPos = treasureroomPosition.transform.position;
-                cameraTransform.position = new Vector3(targetPos.x, cameraTransform.position.y, targetPos.z);
+            lootcounter++;
+            Component[] items = lootObjects[lootcounter].GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in items) {
+                renderer.enabled = true;
             }
+
+            items = container.crumb.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in items) {
+                renderer.enabled = false;
+            }
+            breadcrumbs.Remove(container);
+            break;
+        }
+
+        // If the player stands on the chest in the maze he gets teleported to the treasure room
+        if (playerX == mazeRows - 1 && playerZ == mazeColumns - 1) {
+            wonTheGame = true;
+            Vector3 targetPos = treasureroomPosition.transform.position;
+            cameraTransform.position = new Vector3(targetPos.x, cameraTransform.position.y, targetPos.z);
         }
     }
 
@@ -58,6 +84,7 @@ public class InputScript : MonoBehaviour {
                 mazeRows = MazeLoaderScript.mazeRows;
                 mazeColumns = MazeLoaderScript.mazeColumns;
                 mazeCells = MazeLoaderScript.GetMazeCells();
+                breadcrumbs = MazeLoaderScript.GetCrumbs();
                 mazeSize = MazeLoaderScript.GetMazeSize();
                 return true;
             }

@@ -14,6 +14,7 @@ public class MazeLoader : MonoBehaviour {
 
 	private MazeCell[,] mazeCells;
 	private Vector3 objectScale;
+    private List<Breadcrumb> crumbs;
 
     void Start () {
 		InitializeMaze ();
@@ -94,28 +95,34 @@ public class MazeLoader : MonoBehaviour {
     }
 
     private void PlaceBreadCrumbs() {
-        int crumbCount = (int) Random.Range(5, mazeRows/2f);
-        int counter = 0;
-        List<Vector2> crumbList = new List<Vector2>();
-        while (counter < crumbCount) {
+        crumbs = new List<Breadcrumb>();
+
+        int breadcrumbCount = GameObject.FindGameObjectsWithTag("Loot").Length;
+
+        for (int counter = 0; counter < breadcrumbCount; counter++) {
             int x = Random.Range(0, mazeRows - 1);
             int z = Random.Range(0, mazeColumns - 2); // TODO? -2 and not -1 because: Weird bug. z == mazeColumns at time although Random.Range should only be able to return 0-14 with (0, 14) as input
             Vector2 target = new Vector2(x, z);
-            if (!crumbList.Contains(target)) {
-                bool farEnough = true;
-                foreach (Vector2 item in crumbList) {
-                    if (Vector2.Distance(target, item) < 3) {
-                        farEnough = false;
-                        break;
-                    }
+            bool farEnough = true;
+
+            foreach (Breadcrumb crumb in crumbs) {
+                if (crumb.position == target) {
+                    farEnough = false;
+                    break;
                 }
-                if (farEnough) {
-                    crumbList.Add(target);
-                    Vector3 floorPosition = mazeCells[x, z].floor.transform.position;
-                    Vector3 breadcrumbPosition = new Vector3(floorPosition.x, 0, floorPosition.z + 1.5f);
-                    GameObject crumb = Instantiate(breadcrumb, breadcrumbPosition, Quaternion.identity) as GameObject;
-                    counter++;
+                if (Vector2.Distance(target, crumb.position) < 3) {
+                    farEnough = false;
+                    break;
                 }
+            }
+            if (farEnough) {
+                Vector3 floorPosition = mazeCells[x, z].floor.transform.position;
+                Vector3 breadcrumbPosition = new Vector3(floorPosition.x, -1.1f, floorPosition.z);
+                Breadcrumb crumbObj = new Breadcrumb();
+                crumbObj.crumb = Instantiate(breadcrumb, breadcrumbPosition, Quaternion.identity) as GameObject;
+                crumbObj.position = target;
+                Debug.Log(target);
+                crumbs.Add(crumbObj);
             }
         }
     }
@@ -126,5 +133,9 @@ public class MazeLoader : MonoBehaviour {
 
     public int GetMazeSize() {
         return (int)size;
+    }
+
+    public List<Breadcrumb> GetCrumbs() {
+        return crumbs;
     }
 }
