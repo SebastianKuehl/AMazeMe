@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class InputScript : MonoBehaviour {
 
+    public Transform treasureroomPosition;
     public bool inputByKeyboard = false;
     public bool useMarker = true;
     public bool cheatMode = false;
+
+    private bool wonTheGame = false;
 
     private GameObject rightController;
     private ViveControllerScript rightControllerScript;
@@ -20,11 +23,16 @@ public class InputScript : MonoBehaviour {
     private int playerX, playerZ, OldPlayerX, OldPlayerZ, mazeRows, mazeColumns, mazeSize;
     private int markerX, markerZ, oldMarkerX, oldMarkerZ;
 
-    void Start() {
+    void Awake() {
         rightController = GameObject.Find("Controller (right)");
     }
 
     void FixedUpdate() {
+        
+        if (wonTheGame) {
+            return;
+        }
+
         // Load all the needed data if not done before
         if (MazeLoaderScriptLoaded()) {
             // Handle the chosen method of input
@@ -32,6 +40,12 @@ public class InputScript : MonoBehaviour {
                 HandleKeyboardInput();
             } else {
                 HandleControllerInput();
+            }
+            // If the player stands on the chest in the maze he gets teleported to the treasure room
+            if (playerX == mazeRows - 1 && playerZ == mazeColumns - 1) {
+                wonTheGame = true;
+                Vector3 targetPos = treasureroomPosition.transform.position;
+                cameraTransform.position = new Vector3(targetPos.x, cameraTransform.position.y, targetPos.z);
             }
         }
     }
@@ -78,17 +92,6 @@ public class InputScript : MonoBehaviour {
         }
     }
 
-	private void ApplyChanges(bool confirm) {
-		if (useMarker) {
-			if (confirm && (markerX != playerX || markerZ != playerZ)) {
-				// Move Player towars marker
-				TeleportInStraightLine ();
-			}
-		} else {
-			RefreshPlayerPosition();
-		}
-	}
-
 	private void ControlMovement(bool up, bool down, bool left, bool right) {
         OldPlayerX = playerX;
         OldPlayerZ = playerZ;
@@ -118,6 +121,17 @@ public class InputScript : MonoBehaviour {
             } else if (right) {
                 MovePlayerRight();
             }
+        }
+    }
+
+    private void ApplyChanges(bool confirm) {
+        if (useMarker) {
+            if (confirm && (markerX != playerX || markerZ != playerZ)) {
+                // Move Player towars marker
+                TeleportInStraightLine();
+            }
+        } else {
+            RefreshPlayerPosition();
         }
     }
 
@@ -201,5 +215,9 @@ public class InputScript : MonoBehaviour {
 
     public bool UsesMarker() {
         return useMarker;
+    }
+
+    public bool WonTheGame() {
+        return wonTheGame;
     }
 }
