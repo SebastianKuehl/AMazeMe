@@ -34,7 +34,7 @@ public class MazeLoader : MonoBehaviour {
 		ma.CreateMaze ();
 
 		Vector3 chestLocation = mazeCells[mazeRows - 1, mazeColumns - 1].floor.transform.localPosition;
-		chest = Instantiate (chest, new Vector3 (chestLocation.x, -1.35f, chestLocation.z), Quaternion.identity) as GameObject;
+		chest = Instantiate (chest, new Vector3 (chestLocation.x, -1f, chestLocation.z), Quaternion.identity) as GameObject;
 
 		// Place the cest
 		float tiltAroundY = 0f;
