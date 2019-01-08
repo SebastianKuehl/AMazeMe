@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InputScript : MonoBehaviour {
-
+    
     public Transform treasureroomPosition;
     public bool inputByKeyboard = false;
     public bool useMarker = true;
@@ -67,7 +67,7 @@ public class InputScript : MonoBehaviour {
     }
 
     private void HandleKeyboardInput() {
-        ControlMovement(Input.GetKeyDown("w"), Input.GetKeyDown("s"), Input.GetKeyDown("a"), Input.GetKeyDown("d"));
+        ControlMovement(Input.GetKeyUp("w"), Input.GetKeyUp("s"), Input.GetKeyUp("a"), Input.GetKeyUp("d"));
 		ApplyChanges (Input.GetKeyDown(KeyCode.Space));
     }
 
@@ -149,29 +149,46 @@ public class InputScript : MonoBehaviour {
         if (markerX != playerX && markerZ != playerZ) {
             return;
         }
-
+        bool teleport = true;
+        int newPosition, oldPosition;
         if (markerX == playerX) {
             // Teleport on Y-Axis
             int steps = Mathf.Abs(markerZ - playerZ);
             for (int i = 0; i < steps; i++) {
-                if (markerZ > playerZ) {
-                    MovePlayerUp();
+                bool movePlayerUp = markerZ > playerZ;
+                if (movePlayerUp) {
+                    newPosition = playerZ + 1 + i >= mazeColumns - 1 ? mazeColumns - 1 : playerZ + 1 + i;
                 } else {
-                    MovePlayerDown();
+                    newPosition = playerZ - 1 - i < 0 ? 0 : playerZ - 1 - i;
                 }
-                RefreshPlayerPosition();
+                oldPosition = movePlayerUp ? newPosition - 1 : newPosition + 1;
+                if (mazeCells[playerX, movePlayerUp ? oldPosition : newPosition].eastWallExists || mazeCells[playerX, movePlayerUp ? newPosition : oldPosition].westWallExists) {
+                    teleport = false;
+                    break;
+                }
             }
         } else {
             // Teleport on X-Axis
             int steps = Mathf.Abs(markerX - playerX);
             for (int i = 0; i < steps; i++) {
-                if (markerX > playerX) {
-                    MovePlayerRight();
+                bool movePlayerRight = markerX > playerX;
+                if (movePlayerRight) {
+                    newPosition = playerX + 1 + i >= mazeRows - 1 ? mazeRows - 1 : playerX + 1 + i;
                 } else {
-                    MovePlayerLeft();
+                    newPosition = playerX - 1 - i < 0 ? 0 : playerX - 1 - i;
                 }
-                RefreshPlayerPosition();
+                oldPosition = movePlayerRight ? newPosition - 1 : newPosition + 1;
+                if (mazeCells[movePlayerRight ? newPosition : oldPosition, OldPlayerZ].northWallExists || mazeCells[movePlayerRight ? oldPosition : newPosition, playerZ].southWallExists) {
+                    teleport = false;
+                    break;
+                }
             }
+        }
+        if (teleport) {
+            playerX = markerX;
+            playerZ = markerZ;
+            validPosition = true;
+            RefreshPlayerPosition();
         }
     }
 
@@ -194,7 +211,7 @@ public class InputScript : MonoBehaviour {
         playerX = playerX >= mazeRows - 1 ? playerX : playerX + 1;
         validPosition = !mazeCells[OldPlayerX, OldPlayerZ].southWallExists && !mazeCells[playerX, playerZ].northWallExists;
     }
-
+    
     public int GetPlayerX() {
 		return playerX;
 	}
