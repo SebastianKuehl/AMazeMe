@@ -47,7 +47,7 @@ public class ViveControllerScript : MonoBehaviour {
     }
 
     public bool TouchpadTouchDown() {
-        return device.GetAxis().y <= -0.7f;
+        return device.GetAxis().y <= -0.6f;
     }
 
     public Vector2 TouchPosition() {
