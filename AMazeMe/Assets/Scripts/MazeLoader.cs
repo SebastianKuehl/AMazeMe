@@ -1,60 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MazeLoader : MonoBehaviour {
 	public int mazeRows; // x-Axis
 	public int mazeColumns; // z-Axis
-    public GameObject wall1;
-    public GameObject wall2;
-    public GameObject wall3;
-    public GameObject wall4;
-    public GameObject wall5;
-    public GameObject wall6;
-    public GameObject wall7;
-    public GameObject wall8;
-    public GameObject wall9;
-    public GameObject wall10;
-    public GameObject wall11;
-    public GameObject wall12;
+    public GameObject[] wallArray;
 	public GameObject floor;
 	public GameObject corner;
 	public GameObject chest;
-	public float size = 2f;
+    public GameObject breadcrumb;
+	public float size;
 
 	private MazeCell[,] mazeCells;
 	private Vector3 objectScale;
-	private float width; // x-Axis
-	private float height; // z-Axis
-	private int[,] mazeStructure;
 
-	void Start () {
+    void Start () {
 		InitializeMaze ();
 
 		MazeAlgorithm ma = new HuntAndKillMazeAlgorithm (mazeCells);
 		ma.CreateMaze ();
 
-		Vector3 chestLocation = mazeCells[mazeRows - 1, mazeColumns - 1].floor.transform.localPosition;
-		chest = Instantiate (chest, new Vector3 (chestLocation.x, -1f, chestLocation.z), Quaternion.identity) as GameObject;
+        PlaceChest();
 
-		// Place the cest
-		float tiltAroundY = 0f;
-		bool southWall = mazeCells[mazeRows-2, mazeColumns-1].southWallExists;
-		bool eastWall = mazeCells[mazeRows - 1, mazeColumns-2].eastWallExists;
-		if (!eastWall && !southWall) {
-			tiltAroundY = -130f;
-		} else if (southWall) {
-			tiltAroundY = -180f;
-		} else {
-			tiltAroundY = -90f;
-		}
-		Quaternion target = Quaternion.Euler (0, tiltAroundY, 0);
-		chest.transform.rotation = target;
+        PlaceBreadCrumbs();
 	}
 
 	private void InitializeMaze() {
 		mazeCells = new MazeCell[mazeRows, mazeColumns];
-
-		// TODO Set position of second camera to center of plane
+        
 		for (int r = 0; r < mazeRows; r++) {
 			for (int c = 0; c < mazeColumns; c++) {
 				mazeCells [r, c] = new MazeCell ();
@@ -103,36 +77,47 @@ public class MazeLoader : MonoBehaviour {
 	}
 
     private GameObject GetRandomWall() {
-        float randomNumber = Random.value;
-        if (randomNumber < 0.085) {
-            return wall1;
-        } else if (randomNumber < 0.17) {
-            return wall2;
-        } else if (randomNumber < 0.255) {
-            return wall2;
-        } else if (randomNumber < 0.34) {
-            return wall2;
-        } else if (randomNumber < 0.425) {
-            return wall2;
-        } else if (randomNumber < 0.51) {
-            return wall2;
-        } else if (randomNumber < 0.595) {
-            return wall2;
-        } else if (randomNumber < 0.68) {
-            return wall2;
-        } else if (randomNumber < 0.765) {
-            return wall2;
-        } else if (randomNumber < 0.85) {
-            return wall2;
-        } else if (randomNumber < 0.935) {
-            return wall2;
-        } else {
-            return wall12;
-        }
+        int draw = (int) Random.Range(0, wallArray.Length - 1);
+        return wallArray[draw];
     }
 
-    public int[,] GetMazeStructure() {
-        return mazeStructure;
+    private void PlaceChest() {
+        Vector3 chestLocation = mazeCells[mazeRows - 1, mazeColumns - 1].floor.transform.localPosition;
+        chest = Instantiate(chest, new Vector3(chestLocation.x, -1f, chestLocation.z), Quaternion.identity) as GameObject;
+
+        // Turn the chest
+        bool southWall = mazeCells[mazeRows - 2, mazeColumns - 1].southWallExists;
+        bool eastWall = mazeCells[mazeRows - 1, mazeColumns - 2].eastWallExists;
+        float turnY = !eastWall && !southWall ? -130f : southWall ? -180f : -90f;
+        Quaternion target = Quaternion.Euler(0, turnY, 0);
+        chest.transform.rotation = target;
+    }
+
+    private void PlaceBreadCrumbs() {
+        int crumbCount = (int) Random.Range(5, mazeRows/2f);
+        int counter = 0;
+        List<Vector2> crumbList = new List<Vector2>();
+        while (counter < crumbCount) {
+            int x = Random.Range(0, mazeRows - 1);
+            int z = Random.Range(0, mazeColumns - 2); // TODO? -2 and not -1 because: Weird bug. z == mazeColumns at time although Random.Range should only be able to return 0-14 with (0, 14) as input
+            Vector2 target = new Vector2(x, z);
+            if (!crumbList.Contains(target)) {
+                bool farEnough = true;
+                foreach (Vector2 item in crumbList) {
+                    if (Vector2.Distance(target, item) < 3) {
+                        farEnough = false;
+                        break;
+                    }
+                }
+                if (farEnough) {
+                    crumbList.Add(target);
+                    Vector3 floorPosition = mazeCells[x, z].floor.transform.position;
+                    Vector3 breadcrumbPosition = new Vector3(floorPosition.x, 0, floorPosition.z + 1.5f);
+                    GameObject crumb = Instantiate(breadcrumb, breadcrumbPosition, Quaternion.identity) as GameObject;
+                    counter++;
+                }
+            }
+        }
     }
 
     public MazeCell[,] GetMazeCells() {

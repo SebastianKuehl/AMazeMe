@@ -20,8 +20,8 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 
 		while (! courseComplete) {
 			Kill(); // Will run until it hits a dead end.
-			Hunt(); // Finds the next unvisited cell with an adjacent visited cell. If it can't find any, it sets courseComplete to true.
-		}
+            Hunt(); // Finds the next unvisited cell with an adjacent visited cell. If it can't find any, it sets courseComplete to true.
+        }
 	}
 
 	private void Kill() {
@@ -77,16 +77,12 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 				}
 			}
 		}
-
-
-
 	}
-
 
 	private bool RouteStillAvailable(int row, int column) {
 		int availableRoutes = 0;
 
-		if (row > 0 && !mazeCells[row-1,column].visited) {
+		if (row > 0 && !mazeCells[row-1, column].visited) {
 			availableRoutes++;
 		}
 
@@ -94,11 +90,11 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 			availableRoutes++;
 		}
 
-		if (column > 0 && !mazeCells[row,column-1].visited) {
+		if (column > 0 && !mazeCells[row, column-1].visited) {
 			availableRoutes++;
 		}
 
-		if (column < mazeColumns-1 && !mazeCells[row,column+1].visited) {
+		if (column < mazeColumns-1 && !mazeCells[row, column+1].visited) {
 			availableRoutes++;
 		}
 

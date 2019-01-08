@@ -19,7 +19,6 @@ public class InputScript : MonoBehaviour {
     private Vector3 playerPosition;
     private bool validPosition;
     private MazeCell[,] mazeCells;
-    private int[,] mazeStructure;
     private int playerX, playerZ, OldPlayerX, OldPlayerZ, mazeRows, mazeColumns, mazeSize;
     private int markerX, markerZ, oldMarkerX, oldMarkerZ;
 
@@ -59,7 +58,6 @@ public class InputScript : MonoBehaviour {
                 mazeRows = MazeLoaderScript.mazeRows;
                 mazeColumns = MazeLoaderScript.mazeColumns;
                 mazeCells = MazeLoaderScript.GetMazeCells();
-                mazeStructure = MazeLoaderScript.GetMazeStructure();
                 mazeSize = MazeLoaderScript.GetMazeSize();
                 return true;
             }
@@ -135,26 +133,6 @@ public class InputScript : MonoBehaviour {
         }
     }
 
-    private void MovePlayerUp() {
-        playerZ = playerZ >= mazeColumns - 1 ? playerZ : playerZ + 1;
-        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].eastWallExists && !mazeCells[playerX, playerZ].westWallExists;
-    }
-
-    private void MovePlayerDown() {
-        playerZ = playerZ <= 0 ? 0 : playerZ - 1;
-        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].westWallExists && !mazeCells[playerX, playerZ].eastWallExists;
-    }
-
-    private void MovePlayerLeft() {
-        playerX = playerX <= 0 ? 0 : playerX - 1;
-        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].northWallExists && !mazeCells[playerX, playerZ].southWallExists;
-    }
-
-    private void MovePlayerRight() {
-        playerX = playerX >= mazeRows - 1 ? playerX : playerX + 1;
-        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].southWallExists && !mazeCells[playerX, playerZ].northWallExists;
-    }
-
     private void RefreshPlayerPosition() {
         if (validPosition || cheatMode) {
             Vector3 floorPosition = mazeCells[playerX, playerZ].floor.transform.position;
@@ -195,6 +173,26 @@ public class InputScript : MonoBehaviour {
                 RefreshPlayerPosition();
             }
         }
+    }
+
+    private void MovePlayerUp() {
+        playerZ = playerZ >= mazeColumns - 1 ? playerZ : playerZ + 1;
+        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].eastWallExists && !mazeCells[playerX, playerZ].westWallExists;
+    }
+
+    private void MovePlayerDown() {
+        playerZ = playerZ <= 0 ? 0 : playerZ - 1;
+        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].westWallExists && !mazeCells[playerX, playerZ].eastWallExists;
+    }
+
+    private void MovePlayerLeft() {
+        playerX = playerX <= 0 ? 0 : playerX - 1;
+        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].northWallExists && !mazeCells[playerX, playerZ].southWallExists;
+    }
+
+    private void MovePlayerRight() {
+        playerX = playerX >= mazeRows - 1 ? playerX : playerX + 1;
+        validPosition = !mazeCells[OldPlayerX, OldPlayerZ].southWallExists && !mazeCells[playerX, playerZ].northWallExists;
     }
 
     public int GetPlayerX() {
