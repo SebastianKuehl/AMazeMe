@@ -5,19 +5,26 @@ using UnityEngine;
 
 public class MainScript : MonoBehaviour {
 
-    public Tilemap tilemap;
+    public Tilemap floorTilemap;
+    public Tilemap playerMarkerTilemap;
     public Tile player;
-    public Tile floor;
-	public Tile markerPosition;
+    public Tile marker;
     public Tile cornerSouthEast;
     public Tile cornerWestNorth;
     public Tile cornerNorthEast;
     public Tile cornerWestSouth;
+    public Tile tCornerNorth;
+    public Tile tCornerEast;
+    public Tile tCornerSouth;
+    public Tile tCornerWest;
     public Tile endWest;
     public Tile endEast;
     public Tile endSouth;
     public Tile endNorth;
+    public Tile pathNorthSouth;
+    public Tile pathWestEast;
     public Tile start;
+    public Tile fourWayCenter;
 
     private GameObject gameObj;
     private MazeDataScript mazeDataScript;
@@ -122,42 +129,60 @@ public class MainScript : MonoBehaviour {
         }
 
         // Go through mazeStructure and place needed tile for each point
-        for (int i = 1; i < mazeRows * 3 - 1; i++) {
-            for (int j = 1; j < mazeColumns * 3 - 1; j++) {
-                if (markerScript && markerScript.usesMarker && i == markerScript.markerX * 3 + 1 && j == markerScript.markerZ * 3 + 1) {
-                    tilemap.SetTile(new Vector3Int(i, j, 0), markerPosition);
-                } else if (mazeStructure[i, j] == 1) {
-                    Tile aTile = GetTile(i, j);
-                    tilemap.SetTile(new Vector3Int(i, j, 0), aTile);
+        for (int i = 0; i < mazeRows; i++) {
+            for (int j = 0; j < mazeColumns; j++) {
+                // Marker- and playermap
+                if (markerScript && markerScript.usesMarker && i == markerScript.markerX && j == markerScript.markerZ) {
+                    playerMarkerTilemap.SetTile(new Vector3Int(i, j, 0), marker);
+                } else if (i == newPosition.x && j == newPosition.y){
+                    playerMarkerTilemap.SetTile(new Vector3Int(i, j, 0), player);
                 } else {
-                    tilemap.SetTile(new Vector3Int(i, j, 0), null);
+                    playerMarkerTilemap.SetTile(new Vector3Int(i, j, 0), null);
+                }
+                // Floormap
+                if (mazeStructure[i * 3 + 1, j * 3 + 1] == 1) {
+                    floorTilemap.SetTile(new Vector3Int(i, j, 0), GetTile(i * 3 + 1, j * 3 + 1));
+                } else {
+                    floorTilemap.SetTile(new Vector3Int(i, j, 0), null);
                 }
             }
         }
     }
 
     private Tile GetTile(int x, int y) {
-        if (x == newPosition.x * 3 + 1 && y == newPosition.y * 3 + 1) {
-			return player;
-		}
         string northVisited = VisitedNorth(x, y) ? "North " : "No ";
         string southVisited = VisitedSouth(x, y) ? "South " : "No ";
         string eastVisited = VisitedEast(x, y) ? "East " : "No ";
         string westVisited = VisitedWest(x, y) ? "West" : "No";
         string result = northVisited + southVisited + eastVisited + westVisited;
         switch(result) {
+            // North South East West
+            case "North South East West":
+                return fourWayCenter;
+            case "North South East No":
+                return tCornerWest;
+            case "North South No West":
+                return tCornerEast;
+            case "North South No No":
+                return pathNorthSouth;
+            case "North No East West":
+                return tCornerSouth;
             case "North No East No":
                 return cornerNorthEast;
             case "North No No West":
                 return cornerWestNorth;
             case "North No No No":
                 return endSouth;
+            case "No South East West":
+                return tCornerNorth;
             case "No South East No":
                 return cornerSouthEast;
             case "No South No West":
                 return cornerWestSouth;
             case "No South No No":
                 return endNorth;
+            case "No No East West":
+                return pathWestEast;
             case "No No East No":
                 return endWest;
             case "No No No West":
@@ -165,7 +190,7 @@ public class MainScript : MonoBehaviour {
             case "No No No No":
                 return start;
             default:
-                return floor;
+                return null;
         }
     }
 

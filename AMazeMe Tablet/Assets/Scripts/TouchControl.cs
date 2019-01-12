@@ -107,7 +107,7 @@ public class TouchControl : MonoBehaviour
 		}
 
 		float size = cam.orthographicSize - (offset * speed);
-		cam.orthographicSize = size >= 5f ? size : 5f;
+		cam.orthographicSize = size >= 2f ? size : 2f;
 		// cam.fieldOfView = cam.fieldOfView - (offset * speed);
 	}
 }
