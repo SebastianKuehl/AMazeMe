@@ -9,12 +9,12 @@ public class MazeLoader : MonoBehaviour {
 	public GameObject floor;
 	public GameObject corner;
 	public GameObject chest;
-    public GameObject breadcrumb;
+    public GameObject treasurebag;
 	public float size;
 
 	private MazeCell[,] mazeCells;
 	private Vector3 objectScale;
-    private List<Breadcrumb> crumbs;
+    private List<TreasureBag> bagList;
 
     void Start () {
 		InitializeMaze ();
@@ -24,7 +24,7 @@ public class MazeLoader : MonoBehaviour {
 
         PlaceChest();
 
-        PlaceBreadCrumbs();
+        PlaceTreasureBags();
 	}
 
 	private void InitializeMaze() {
@@ -94,36 +94,46 @@ public class MazeLoader : MonoBehaviour {
         chest.transform.rotation = target;
     }
 
-    private void PlaceBreadCrumbs() {
-        crumbs = new List<Breadcrumb>();
+    private void PlaceTreasureBags() {
+        bagList = new List<TreasureBag>();
 
-        int breadcrumbCount = GameObject.FindGameObjectsWithTag("Loot").Length;
+        int bagCounter = GameObject.FindGameObjectsWithTag("Loot").Length;
 
-        for (int counter = 0; counter < breadcrumbCount; counter++) {
-            int x = Random.Range(0, mazeRows - 1);
-            int z = Random.Range(0, mazeColumns - 2); // TODO? -2 and not -1 because: Weird bug. z == mazeColumns at time although Random.Range should only be able to return 0-14 with (0, 14) as input
-            Vector2 target = new Vector2(x, z);
-            bool farEnough = true;
+        for (int counter = 0; counter < bagCounter; counter++) {
+            bool validPosition = false;
 
-            foreach (Breadcrumb crumb in crumbs) {
-                if (crumb.position == target) {
-                    farEnough = false;
-                    break;
+            int x = 0, z = 0;
+            Vector2 target = Vector2.zero;
+
+            // Generate a new position for a crumb while the targeted position is a crumb or not far enough from other crumbs
+            while (!validPosition) {
+                Debug.Log("Calculating..");
+                x = Random.Range(0, mazeRows - 1);
+                z = Random.Range(0, mazeColumns - 1);
+
+                while((x == 0 && z == 0) || (x == mazeRows - 1 && z == mazeColumns - 1)) {
+                    x = Random.Range(0, mazeRows - 1);
+                    z = Random.Range(0, mazeColumns - 1);
                 }
-                if (Vector2.Distance(target, crumb.position) < 3) {
-                    farEnough = false;
-                    break;
+
+                target = new Vector2(x, z);
+
+                foreach (TreasureBag bag in bagList) {
+                    if (bag.position == target || Vector2.Distance(target, bag.position) < 3) {
+                        validPosition = false;
+                        break;
+                    }
                 }
+                validPosition = true;
+
             }
-            if (farEnough) {
-                Vector3 floorPosition = mazeCells[x, z].floor.transform.position;
-                Vector3 breadcrumbPosition = new Vector3(floorPosition.x, -1.1f, floorPosition.z);
-                Breadcrumb crumbObj = new Breadcrumb();
-                crumbObj.crumb = Instantiate(breadcrumb, breadcrumbPosition, Quaternion.identity) as GameObject;
-                crumbObj.position = target;
-                Debug.Log(target);
-                crumbs.Add(crumbObj);
-            }
+
+            Vector3 floorPosition = mazeCells[x, z].floor.transform.position;
+            TreasureBag bagObj = new TreasureBag() {
+                bag = Instantiate(treasurebag, new Vector3(floorPosition.x, -1.1f, floorPosition.z), Quaternion.identity) as GameObject,
+                position = target
+            };
+            bagList.Add(bagObj);
         }
     }
 
@@ -135,7 +145,7 @@ public class MazeLoader : MonoBehaviour {
         return (int)size;
     }
 
-    public List<Breadcrumb> GetCrumbs() {
-        return crumbs;
+    public List<TreasureBag> GetBags() {
+        return bagList;
     }
 }

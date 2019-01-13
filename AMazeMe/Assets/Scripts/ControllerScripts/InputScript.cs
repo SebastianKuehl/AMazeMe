@@ -17,7 +17,7 @@ public class InputScript : MonoBehaviour {
     private MazeLoader MazeLoaderScript;
     private bool validPosition;
     private MazeCell[,] mazeCells;
-    private List<Breadcrumb> breadcrumbs;
+    private List<TreasureBag> bagList;
     private GameObject[] lootObjects;
     private int lootcounter;
     private int playerX, playerZ, OldPlayerX, OldPlayerZ, mazeRows, mazeColumns, mazeSize;
@@ -49,7 +49,7 @@ public class InputScript : MonoBehaviour {
 
         // Collect breadcrumbs if player stands on one
         Vector2 currentPos = new Vector2(playerX, playerZ);
-        foreach (Breadcrumb container in breadcrumbs) {
+        foreach (TreasureBag container in bagList) {
             if (container.position != currentPos) {
                 continue;
             }
@@ -59,11 +59,11 @@ public class InputScript : MonoBehaviour {
                 renderer.enabled = true;
             }
 
-            items = container.crumb.GetComponentsInChildren<Renderer>();
+            items = container.bag.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in items) {
                 renderer.enabled = false;
             }
-            breadcrumbs.Remove(container);
+            bagList.Remove(container);
             break;
         }
 
@@ -84,7 +84,7 @@ public class InputScript : MonoBehaviour {
                 mazeRows = MazeLoaderScript.mazeRows;
                 mazeColumns = MazeLoaderScript.mazeColumns;
                 mazeCells = MazeLoaderScript.GetMazeCells();
-                breadcrumbs = MazeLoaderScript.GetCrumbs();
+                bagList = MazeLoaderScript.GetBags();
                 mazeSize = MazeLoaderScript.GetMazeSize();
                 return true;
             }
