@@ -26,12 +26,6 @@ public class InputScript : MonoBehaviour {
     void Awake() {
         rightController = GameObject.Find("Controller (right)");
         lootObjects = GameObject.FindGameObjectsWithTag("Loot");
-        foreach (GameObject obj in lootObjects) {
-            Component[] items = obj.GetComponentsInChildren<Renderer>();
-            foreach (Renderer renderer in items) {
-                renderer.enabled = false;
-            }
-        }
     }
 
     void FixedUpdate() {
@@ -47,7 +41,7 @@ public class InputScript : MonoBehaviour {
             HandleControllerInput();
         }
 
-        // Collect breadcrumbs if player stands on one
+        // Collect treasurebag if player stands on one
         Vector2 currentPos = new Vector2(playerX, playerZ);
         foreach (TreasureBag container in bagList) {
             if (container.position != currentPos) {

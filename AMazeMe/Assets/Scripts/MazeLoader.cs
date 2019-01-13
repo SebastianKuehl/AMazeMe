@@ -24,6 +24,7 @@ public class MazeLoader : MonoBehaviour {
 
         PlaceChest();
 
+        HideTreasureBagsInTreasureRoom();
         PlaceTreasureBags();
 	}
 
@@ -70,9 +71,9 @@ public class MazeLoader : MonoBehaviour {
 
 		for (int r = 0; r <= mazeRows; r++) {
 			for (int c = 0; c <= mazeColumns; c++) {
-				GameObject dump = Instantiate (corner, new Vector3 (r*size - size/2f, 0, c*size - size/2f), Quaternion.identity) as GameObject;
-				objectScale = dump.transform.localScale;
-				dump.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
+				GameObject cornerObj = Instantiate (corner, new Vector3 (r*size - size/2f, 0, c*size - size/2f), Quaternion.identity) as GameObject;
+				objectScale = cornerObj.transform.localScale;
+                cornerObj.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
 			}
 		}
 	}
@@ -94,6 +95,16 @@ public class MazeLoader : MonoBehaviour {
         chest.transform.rotation = target;
     }
 
+    private void HideTreasureBagsInTreasureRoom() {
+        GameObject[] bags = GameObject.FindGameObjectsWithTag("Loot");
+        foreach (GameObject obj in bags) {
+            Component[] items = obj.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in items) {
+                renderer.enabled = false;
+            }
+        }
+    }
+
     private void PlaceTreasureBags() {
         bagList = new List<TreasureBag>();
 
@@ -107,7 +118,6 @@ public class MazeLoader : MonoBehaviour {
 
             // Generate a new position for a crumb while the targeted position is a crumb or not far enough from other crumbs
             while (!validPosition) {
-                Debug.Log("Calculating..");
                 x = Random.Range(0, mazeRows - 1);
                 z = Random.Range(0, mazeColumns - 1);
 
