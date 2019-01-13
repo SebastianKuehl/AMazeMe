@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainScript : MonoBehaviour {
+
+    public Text winnerText;
 
     public Tilemap floorTilemap;
     public Tilemap playerMarkerTilemap;
@@ -41,6 +44,7 @@ public class MainScript : MonoBehaviour {
         gameObj = GameObject.Find("GameObject");
         playerPositionList = new List<Vector2>();
         newPosition = new Vector2(0, 0);
+        winnerText.enabled = false;
 	}
 	
 	void Update () {
@@ -78,7 +82,14 @@ public class MainScript : MonoBehaviour {
         // Add the latest position to the list if not done before
         newPosition.x = playerPositionScript.playerX;
         newPosition.y = playerPositionScript.playerZ; // playerZ because the PC application is in 3D and Y is up/down
+
+        // Won the game?
+        if (newPosition.x == mazeRows - 1 && newPosition.y == mazeColumns - 1) {
+            winnerText.enabled = true;
+        }
+
         bool pathNeedsUpdate = false;
+
         if (playerPositionList.Count <= 0) {
             lastPosition = newPosition;
             playerPositionList.Add(newPosition);
