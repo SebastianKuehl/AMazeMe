@@ -3,36 +3,69 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InputScript : MonoBehaviour {
-
+    
+    public Transform treasureroomPosition;
     public bool inputByKeyboard = false;
     public bool useMarker = true;
     public bool cheatMode = false;
+
+    private bool wonTheGame = false;
 
     private GameObject rightController;
     private ViveControllerScript rightControllerScript;
     private Transform cameraTransform;
     private MazeLoader MazeLoaderScript;
-    private Vector2 wallPosition;
-    private Vector3 playerPosition;
     private bool validPosition;
     private MazeCell[,] mazeCells;
-    private int[,] mazeStructure;
+    private List<TreasureBag> bagList;
+    private GameObject[] lootObjects;
+    private int lootcounter;
     private int playerX, playerZ, OldPlayerX, OldPlayerZ, mazeRows, mazeColumns, mazeSize;
     private int markerX, markerZ, oldMarkerX, oldMarkerZ;
 
-    void Start() {
+    void Awake() {
         rightController = GameObject.Find("Controller (right)");
+        lootObjects = GameObject.FindGameObjectsWithTag("Loot");
     }
 
     void FixedUpdate() {
-        // Load all the needed data if not done before
-        if (MazeLoaderScriptLoaded()) {
-            // Handle the chosen method of input
-            if (inputByKeyboard) {
-                HandleKeyboardInput();
-            } else {
-                HandleControllerInput();
+        
+        if (wonTheGame || !MazeLoaderScriptLoaded()) {
+            return;
+        }
+
+        // Handle the chosen method of input
+        if (inputByKeyboard) {
+            HandleKeyboardInput();
+        } else {
+            HandleControllerInput();
+        }
+
+        // Collect treasurebag if player stands on one
+        Vector2 currentPos = new Vector2(playerX, playerZ);
+        foreach (TreasureBag container in bagList) {
+            if (container.position != currentPos) {
+                continue;
             }
+            lootcounter++;
+            Component[] items = lootObjects[lootcounter].GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in items) {
+                renderer.enabled = true;
+            }
+
+            items = container.bag.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in items) {
+                renderer.enabled = false;
+            }
+            bagList.Remove(container);
+            break;
+        }
+
+        // If the player stands on the chest in the maze he gets teleported to the treasure room
+        if (playerX == mazeRows - 1 && playerZ == mazeColumns - 1) {
+            wonTheGame = true;
+            Vector3 targetPos = treasureroomPosition.transform.position;
+            cameraTransform.position = new Vector3(targetPos.x, cameraTransform.position.y, targetPos.z);
         }
     }
 
@@ -45,7 +78,7 @@ public class InputScript : MonoBehaviour {
                 mazeRows = MazeLoaderScript.mazeRows;
                 mazeColumns = MazeLoaderScript.mazeColumns;
                 mazeCells = MazeLoaderScript.GetMazeCells();
-                mazeStructure = MazeLoaderScript.GetMazeStructure();
+                bagList = MazeLoaderScript.GetBags();
                 mazeSize = MazeLoaderScript.GetMazeSize();
                 return true;
             }
@@ -55,7 +88,7 @@ public class InputScript : MonoBehaviour {
     }
 
     private void HandleKeyboardInput() {
-        ControlMovement(Input.GetKeyDown("w"), Input.GetKeyDown("s"), Input.GetKeyDown("a"), Input.GetKeyDown("d"));
+        ControlMovement(Input.GetKeyUp("w"), Input.GetKeyUp("s"), Input.GetKeyUp("a"), Input.GetKeyUp("d"));
 		ApplyChanges (Input.GetKeyDown(KeyCode.Space));
     }
 
@@ -77,17 +110,6 @@ public class InputScript : MonoBehaviour {
 			ApplyChanges (rightControllerScript.TriggerDown());
         }
     }
-
-	private void ApplyChanges(bool confirm) {
-		if (useMarker) {
-			if (confirm && (markerX != playerX || markerZ != playerZ)) {
-				// Move Player towars marker
-				TeleportInStraightLine ();
-			}
-		} else {
-			RefreshPlayerPosition();
-		}
-	}
 
 	private void ControlMovement(bool up, bool down, bool left, bool right) {
         OldPlayerX = playerX;
@@ -121,6 +143,76 @@ public class InputScript : MonoBehaviour {
         }
     }
 
+    private void ApplyChanges(bool confirm) {
+        if (useMarker) {
+            if (confirm && (markerX != playerX || markerZ != playerZ)) {
+                // Move Player towars marker
+                TeleportInStraightLine();
+            }
+        } else {
+            RefreshPlayerPosition();
+        }
+    }
+
+    private void RefreshPlayerPosition() {
+        if (validPosition || cheatMode) {
+            Vector3 floorPosition = mazeCells[playerX, playerZ].floor.transform.position;
+            cameraTransform.position = new Vector3(floorPosition.x, -1f, floorPosition.z);
+            validPosition = false;
+        } else {
+            playerX = OldPlayerX;
+            playerZ = OldPlayerZ;
+        }
+    }
+
+    private void TeleportInStraightLine() {
+        // Both axis are not on line
+        if (markerX != playerX && markerZ != playerZ) {
+            return;
+        }
+        bool teleport = true;
+        int newPosition, oldPosition;
+        if (markerX == playerX) {
+            // Teleport on Y-Axis
+            int steps = Mathf.Abs(markerZ - playerZ);
+            for (int i = 0; i < steps; i++) {
+                bool movePlayerUp = markerZ > playerZ;
+                if (movePlayerUp) {
+                    newPosition = playerZ + 1 + i >= mazeColumns - 1 ? mazeColumns - 1 : playerZ + 1 + i;
+                } else {
+                    newPosition = playerZ - 1 - i < 0 ? 0 : playerZ - 1 - i;
+                }
+                oldPosition = movePlayerUp ? newPosition - 1 : newPosition + 1;
+                if (mazeCells[playerX, movePlayerUp ? oldPosition : newPosition].eastWallExists || mazeCells[playerX, movePlayerUp ? newPosition : oldPosition].westWallExists) {
+                    teleport = false;
+                    break;
+                }
+            }
+        } else {
+            // Teleport on X-Axis
+            int steps = Mathf.Abs(markerX - playerX);
+            for (int i = 0; i < steps; i++) {
+                bool movePlayerRight = markerX > playerX;
+                if (movePlayerRight) {
+                    newPosition = playerX + 1 + i >= mazeRows - 1 ? mazeRows - 1 : playerX + 1 + i;
+                } else {
+                    newPosition = playerX - 1 - i < 0 ? 0 : playerX - 1 - i;
+                }
+                oldPosition = movePlayerRight ? newPosition - 1 : newPosition + 1;
+                if (mazeCells[movePlayerRight ? newPosition : oldPosition, OldPlayerZ].northWallExists || mazeCells[movePlayerRight ? oldPosition : newPosition, playerZ].southWallExists) {
+                    teleport = false;
+                    break;
+                }
+            }
+        }
+        if (teleport) {
+            playerX = markerX;
+            playerZ = markerZ;
+            validPosition = true;
+            RefreshPlayerPosition();
+        }
+    }
+
     private void MovePlayerUp() {
         playerZ = playerZ >= mazeColumns - 1 ? playerZ : playerZ + 1;
         validPosition = !mazeCells[OldPlayerX, OldPlayerZ].eastWallExists && !mazeCells[playerX, playerZ].westWallExists;
@@ -140,49 +232,7 @@ public class InputScript : MonoBehaviour {
         playerX = playerX >= mazeRows - 1 ? playerX : playerX + 1;
         validPosition = !mazeCells[OldPlayerX, OldPlayerZ].southWallExists && !mazeCells[playerX, playerZ].northWallExists;
     }
-
-    private void RefreshPlayerPosition() {
-        if (validPosition || cheatMode) {
-            Vector3 floorPosition = mazeCells[playerX, playerZ].floor.transform.position;
-            cameraTransform.position = new Vector3(floorPosition.x, -1f, floorPosition.z);
-            validPosition = false;
-        } else {
-            playerX = OldPlayerX;
-            playerZ = OldPlayerZ;
-        }
-    }
-
-    private void TeleportInStraightLine() {
-        // Both axis are not on line
-        if (markerX != playerX && markerZ != playerZ) {
-            return;
-        }
-
-        if (markerX == playerX) {
-            // Teleport on Y-Axis
-            int steps = Mathf.Abs(markerZ - playerZ);
-            for (int i = 0; i < steps; i++) {
-                if (markerZ > playerZ) {
-                    MovePlayerUp();
-                } else {
-                    MovePlayerDown();
-                }
-                RefreshPlayerPosition();
-            }
-        } else {
-            // Teleport on X-Axis
-            int steps = Mathf.Abs(markerX - playerX);
-            for (int i = 0; i < steps; i++) {
-                if (markerX > playerX) {
-                    MovePlayerRight();
-                } else {
-                    MovePlayerLeft();
-                }
-                RefreshPlayerPosition();
-            }
-        }
-    }
-
+    
     public int GetPlayerX() {
 		return playerX;
 	}
@@ -201,5 +251,9 @@ public class InputScript : MonoBehaviour {
 
     public bool UsesMarker() {
         return useMarker;
+    }
+
+    public bool WonTheGame() {
+        return wonTheGame;
     }
 }

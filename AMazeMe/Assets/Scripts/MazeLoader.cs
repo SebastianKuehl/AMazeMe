@@ -1,60 +1,36 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MazeLoader : MonoBehaviour {
 	public int mazeRows; // x-Axis
 	public int mazeColumns; // z-Axis
-    public GameObject wall1;
-    public GameObject wall2;
-    public GameObject wall3;
-    public GameObject wall4;
-    public GameObject wall5;
-    public GameObject wall6;
-    public GameObject wall7;
-    public GameObject wall8;
-    public GameObject wall9;
-    public GameObject wall10;
-    public GameObject wall11;
-    public GameObject wall12;
+    public GameObject[] wallArray;
 	public GameObject floor;
 	public GameObject corner;
 	public GameObject chest;
-	public float size = 2f;
+    public GameObject treasurebag;
+	public float size;
 
 	private MazeCell[,] mazeCells;
 	private Vector3 objectScale;
-	private float width; // x-Axis
-	private float height; // z-Axis
-	private int[,] mazeStructure;
+    private List<TreasureBag> bagList;
 
-	void Start () {
+    void Start () {
 		InitializeMaze ();
 
 		MazeAlgorithm ma = new HuntAndKillMazeAlgorithm (mazeCells);
 		ma.CreateMaze ();
 
-		Vector3 chestLocation = mazeCells[mazeRows - 1, mazeColumns - 1].floor.transform.localPosition;
-		chest = Instantiate (chest, new Vector3 (chestLocation.x, -1.35f, chestLocation.z), Quaternion.identity) as GameObject;
+        PlaceChest();
 
-		// Place the cest
-		float tiltAroundY = 0f;
-		bool southWall = mazeCells[mazeRows-2, mazeColumns-1].southWallExists;
-		bool eastWall = mazeCells[mazeRows - 1, mazeColumns-2].eastWallExists;
-		if (!eastWall && !southWall) {
-			tiltAroundY = -130f;
-		} else if (southWall) {
-			tiltAroundY = -180f;
-		} else {
-			tiltAroundY = -90f;
-		}
-		Quaternion target = Quaternion.Euler (0, tiltAroundY, 0);
-		chest.transform.rotation = target;
+        HideTreasureBagsInTreasureRoom();
+        PlaceTreasureBags();
 	}
 
 	private void InitializeMaze() {
 		mazeCells = new MazeCell[mazeRows, mazeColumns];
-
-		// TODO Set position of second camera to center of plane
+        
 		for (int r = 0; r < mazeRows; r++) {
 			for (int c = 0; c < mazeColumns; c++) {
 				mazeCells [r, c] = new MazeCell ();
@@ -95,44 +71,80 @@ public class MazeLoader : MonoBehaviour {
 
 		for (int r = 0; r <= mazeRows; r++) {
 			for (int c = 0; c <= mazeColumns; c++) {
-				GameObject dump = Instantiate (corner, new Vector3 (r*size - size/2f, 0, c*size - size/2f), Quaternion.identity) as GameObject;
-				objectScale = dump.transform.localScale;
-				dump.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
+				GameObject cornerObj = Instantiate (corner, new Vector3 (r*size - size/2f, 0, c*size - size/2f), Quaternion.identity) as GameObject;
+				objectScale = cornerObj.transform.localScale;
+                cornerObj.transform.localScale = new Vector3 (objectScale.x * size, objectScale.y, objectScale.z * size);
 			}
 		}
 	}
 
     private GameObject GetRandomWall() {
-        float randomNumber = Random.value;
-        if (randomNumber < 0.085) {
-            return wall1;
-        } else if (randomNumber < 0.17) {
-            return wall2;
-        } else if (randomNumber < 0.255) {
-            return wall2;
-        } else if (randomNumber < 0.34) {
-            return wall2;
-        } else if (randomNumber < 0.425) {
-            return wall2;
-        } else if (randomNumber < 0.51) {
-            return wall2;
-        } else if (randomNumber < 0.595) {
-            return wall2;
-        } else if (randomNumber < 0.68) {
-            return wall2;
-        } else if (randomNumber < 0.765) {
-            return wall2;
-        } else if (randomNumber < 0.85) {
-            return wall2;
-        } else if (randomNumber < 0.935) {
-            return wall2;
-        } else {
-            return wall12;
+        int draw = (int) Random.Range(0, wallArray.Length - 1);
+        return wallArray[draw];
+    }
+
+    private void PlaceChest() {
+        Vector3 chestLocation = mazeCells[mazeRows - 1, mazeColumns - 1].floor.transform.localPosition;
+        chest = Instantiate(chest, new Vector3(chestLocation.x, -1f, chestLocation.z), Quaternion.identity) as GameObject;
+
+        // Turn the chest
+        bool southWall = mazeCells[mazeRows - 2, mazeColumns - 1].southWallExists;
+        bool eastWall = mazeCells[mazeRows - 1, mazeColumns - 2].eastWallExists;
+        float turnY = !eastWall && !southWall ? -130f : southWall ? -180f : -90f;
+        Quaternion target = Quaternion.Euler(0, turnY, 0);
+        chest.transform.rotation = target;
+    }
+
+    private void HideTreasureBagsInTreasureRoom() {
+        GameObject[] bags = GameObject.FindGameObjectsWithTag("Loot");
+        foreach (GameObject obj in bags) {
+            Component[] items = obj.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in items) {
+                renderer.enabled = false;
+            }
         }
     }
 
-    public int[,] GetMazeStructure() {
-        return mazeStructure;
+    private void PlaceTreasureBags() {
+        bagList = new List<TreasureBag>();
+
+        int bagCounter = GameObject.FindGameObjectsWithTag("Loot").Length;
+
+        for (int counter = 0; counter < bagCounter; counter++) {
+            bool validPosition = false;
+
+            int x = 0, z = 0;
+            Vector2 target = Vector2.zero;
+
+            // Generate a new position for a crumb while the targeted position is a crumb or not far enough from other crumbs
+            while (!validPosition) {
+                x = Random.Range(0, mazeRows - 1);
+                z = Random.Range(0, mazeColumns - 1);
+
+                while((x == 0 && z == 0) || (x == mazeRows - 1 && z == mazeColumns - 1)) {
+                    x = Random.Range(0, mazeRows - 1);
+                    z = Random.Range(0, mazeColumns - 1);
+                }
+
+                target = new Vector2(x, z);
+
+                foreach (TreasureBag bag in bagList) {
+                    if (bag.position == target || Vector2.Distance(target, bag.position) < 3) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                validPosition = true;
+
+            }
+
+            Vector3 floorPosition = mazeCells[x, z].floor.transform.position;
+            TreasureBag bagObj = new TreasureBag() {
+                bag = Instantiate(treasurebag, new Vector3(floorPosition.x, -1.1f, floorPosition.z), Quaternion.identity) as GameObject,
+                position = target
+            };
+            bagList.Add(bagObj);
+        }
     }
 
     public MazeCell[,] GetMazeCells() {
@@ -141,5 +153,9 @@ public class MazeLoader : MonoBehaviour {
 
     public int GetMazeSize() {
         return (int)size;
+    }
+
+    public List<TreasureBag> GetBags() {
+        return bagList;
     }
 }

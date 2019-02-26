@@ -4,22 +4,24 @@ using UnityEngine;
 
 public class MarkerMovementScript : MonoBehaviour {
     private float step;
-
     private InputScript inputScript;
 
     void FixedUpdate () {
-        if (GotInputScript()) {
-            if (!inputScript.UsesMarker()) {
-                GetComponent<Renderer>().enabled = false;
-                return;
-            } else {
-                GetComponent<Renderer>().enabled = true;
-            }
+        if (!GotInputScript()) {
+            return;
+        }
+
+        if (!inputScript.UsesMarker()) {
+            GetComponent<Renderer>().enabled = false;
+            return;
+        } else {
+            GetComponent<Renderer>().enabled = true;
+
             step = (step + 0.05f) % 360f;
-            float x = 0.5f + inputScript.GetMarkerX() * 5f;
-            float y = MarkerOnPlayer() ? 4f : 2.5f;
-            y += (Mathf.Sin(step) / 2);
-            float z = 0.5f + inputScript.GetMarkerZ() * 5f;
+            float x = inputScript.GetMarkerX() * 5f;
+            float y = -1.1f;
+            y -= (Mathf.Sin(step) / 15);
+            float z = inputScript.GetMarkerZ() * 5f;
             this.transform.position = new Vector3(x, y, z);
         }
     }
@@ -34,9 +36,5 @@ public class MarkerMovementScript : MonoBehaviour {
             return false;
         }
         return true;
-    }
-
-    private bool MarkerOnPlayer() {
-        return inputScript.GetMarkerX() == inputScript.GetPlayerX() && inputScript.GetMarkerZ() == inputScript.GetPlayerZ();
     }
 }
